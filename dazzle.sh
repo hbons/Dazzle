@@ -110,7 +110,8 @@ function create_project {
   if [ "$PORT" = "22" ]; then
     PORT=""
   else
-    PORT=":$PORT"
+    CUSTOM_PORT=`grep "^Port " /etc/ssh/sshd_config | cut -b 6-`
+    PORT=":$CUSTOM_PORT"
   fi
 
   IP=`curl --silent http://ifconfig.me/ip`
