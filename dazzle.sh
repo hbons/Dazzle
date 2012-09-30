@@ -117,7 +117,7 @@ function create_project {
   IP=`curl --silent http://ifconfig.me/ip`
 
   echo "To link up a SparkleShare client, enter the following"
-  echo "details into the ${BOLD}\"Add Hosted Project...\"{$NORMAL} dialog: "
+  echo "details into the ${BOLD}\"Add Hosted Project...\"${NORMAL} dialog: "
   echo 
   echo "      Address: ${BOLD}storage@$IP$PORT${NORMAL}"
   echo "  Remote Path: ${BOLD}/home/storage/$1${NORMAL}"
