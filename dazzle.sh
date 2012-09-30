@@ -159,6 +159,9 @@ case $1 in
   create)
     create_project $2
     ;;
+  create-encrypted)
+    create_project $2-crypto
+    ;;
   link)
     link_client $2
     ;;
@@ -167,9 +170,10 @@ case $1 in
     echo
     echo "Usage: dazzle [COMMAND]"
     echo 
-    echo "  setup                  configures this machine to serve as a SparkleShare host"
-    echo "  create PROJECT_NAME    creates a SparkleShare project called PROJECT_NAME"
-    echo "  link                   links a SparkleShare client to this host by entering a link code"
+    echo "  setup                            configures this machine to serve as a SparkleShare host"
+    echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
+    echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
+    echo "  link                             links a SparkleShare client to this host by entering a link code"
     echo
     ;;
 esac
