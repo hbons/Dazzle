@@ -13,7 +13,7 @@ if [[ $UID -ne 0 ]]; then
       # You should be allowed to check the help without root
       ;;
     *)
-      echo "Dazzle needs to be run as root"
+      echo "Sorry, but Dazzle needs to be run as root"
       exit 1
     ;;
   esac
@@ -63,6 +63,7 @@ function configure_ssh {
   if ! [ "$CONFIG_CHECK" = "# SparkleShare" ]; then
     echo "" >> /etc/ssh/sshd_config
     echo "# SparkleShare" >> /etc/ssh/sshd_config
+    echo "# Please do not edit the above comment as it's used as a check by Dazzle" >> /etc/ssh/sshd_config
     echo "Match User storage" >> /etc/ssh/sshd_config
     echo "    PasswordAuthentication no" >> /etc/ssh/sshd_config
   fi
