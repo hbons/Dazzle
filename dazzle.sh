@@ -66,7 +66,7 @@ function configure_ssh {
 }
 
 function restart_ssh {
-  echo "${BOLD}(3/4) Restarting SSH service...${NORMAL}"
+  echo "${BOLD}(3/4) Restarting the SSH service...${NORMAL}"
   
   if [ -f "/etc/init.d/sshd" ]; then
     echo " -> /etc/init.d/sshd restart"
@@ -78,11 +78,11 @@ function restart_ssh {
 }
 
 function install_git {
-  echo "${BOLD}(4/4) Installing Git package...${NORMAL}"
+  echo "${BOLD}(4/4) Installing the Git package...${NORMAL}"
 
   if [ -f "/usr/bin/git" ]; then
     GIT_VERSION=`/usr/bin/git --version | cut -b 13-`
-    echo " -> Git package has already been installed (version $GIT_VERSION)."
+    echo " -> The Git package has already been installed (version $GIT_VERSION)."
   else 
     if [ -f "/usr/bin/yum" ]; then
       echo " -> yum -y install git"
