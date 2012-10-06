@@ -6,6 +6,7 @@
 # To Public License, Version 2, as published by Sam Hocevar. See
 # http://sam.zoy.org/wtfpl/COPYING for more details.
 
+
 # Check if we're root, if not show a warning
 if [[ $UID -ne 0 ]]; then
   case $1 in
@@ -53,6 +54,7 @@ function configure_ssh {
   echo "${DIM} -> chmod 600 /home/storage/.ssh/authorized_keys${NORMAL}"
   chmod 600 /home/storage/.ssh/authorized_keys
 
+  # Disable the password for the "storage" user to force authentication using a key
   CONFIG_CHECK=`grep "^# SparkleShare$" /etc/ssh/sshd_config`
   if ! [ "$CONFIG_CHECK" = "# SparkleShare" ]; then
     echo "" >> /etc/ssh/sshd_config
@@ -101,9 +103,11 @@ function create_project {
     echo " -> Project \"$1\" already exists."
     echo
   else
+    # Create the Git repository
     echo " -> git init --bare /home/storage/$1"
     git init --quiet --bare /home/storage/$1
     
+    # Set the right permissions
     echo " -> chown -R storage:storage /home/storage"
     chown -R storage:storage /home/storage
 
@@ -113,9 +117,11 @@ function create_project {
     echo "${BOLD}Project \"$1\" was successfully created.${NORMAL}"
   fi
 
+  # Fetch the external IP address
   IP=`curl --silent http://ifconfig.me/ip`
   PORT=`grep "^Port " /etc/ssh/sshd_config | cut -b 6-`
 
+  # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
   echo "details into the ${BOLD}\"Add Hosted Project...\"${NORMAL} dialog: "
   echo 
@@ -127,6 +133,7 @@ function create_project {
 }
 
 function link_client {
+  # Ask the user for the link code with a prompt
   echo "Paste the contents of ${BOLD}\"~/SparkleShare/Your Name's link code.txt\"${NORMAL}"
   echo "(found on the client) into the field below and press ${BOLD}<ENTER>${NORMAL}."
   echo 
