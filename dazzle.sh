@@ -144,7 +144,7 @@ function link_client {
     echo $LINK_CODE >> /home/storage/.ssh/authorized_keys
     echo
     echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
-    echo Repeat this step to link more clients.
+    echo "Repeat this step to link more clients."
     echo
   else
     echo "${BOLD}Not a valid link code...${NORMAL}"
