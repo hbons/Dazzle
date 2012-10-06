@@ -6,8 +6,20 @@
 # To Public License, Version 2, as published by Sam Hocevar. See
 # http://sam.zoy.org/wtfpl/COPYING for more details.
 
+# Check if we're root, if not show a warning
+if [[ $UID -ne 0 ]]; then
+  case $1 in
+    help)
+      # You should be allowed to check the help without root
+      ;;
+    *)
+      echo "Dazzle needs to be run as root"
+      exit 1
+    ;;
+  esac
+fi
 
-# OS detection
+# Check which Linux distro we're on
 OS="debian"
 if [ -f "/etc/redhat-release" ]; then
   OS="redhat"
@@ -144,6 +156,7 @@ function link_client {
   fi
 }
 
+
 # Parse the command line arguments
 case $1 in
   setup)
@@ -167,6 +180,7 @@ case $1 in
     ;;
   *|help)
     echo "${BOLD}Dazzle, SparkleShare host setup script${NORMAL}"
+    echo "This script needs to be run as root"
     echo
     echo "Usage: dazzle [COMMAND]"
     echo 
