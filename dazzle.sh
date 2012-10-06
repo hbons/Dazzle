@@ -18,12 +18,6 @@ if [[ $UID -ne 0 ]]; then
     ;;
   esac
 fi
-
-# Check which Linux distro we're on
-OS="debian"
-if [ -f "/etc/redhat-release" ]; then
-  OS="redhat"
-fi
   
 # Define text styles
 BOLD=`tput bold`
@@ -74,7 +68,7 @@ function configure_ssh {
 function restart_ssh {
   echo "${BOLD}(3/4) Restarting SSH service...${NORMAL}"
   
-  if [ "$OS" = "redhat" ]; then
+  if [ -f "/etc/init.d/sshd" ]; then
     echo " -> /etc/init.d/sshd restart"
     /etc/init.d/sshd restart >/dev/null
   else
@@ -90,7 +84,7 @@ function install_git {
     GIT_VERSION=`/usr/bin/git --version | cut -b 13-`
     echo " -> Git package has already been installed (version $GIT_VERSION)."
   else 
-    if [ "$OS" = "redhat" ]; then
+    if [ -f "/usr/bin/yum" ]; then
       echo " -> yum -y install git"
       yum -y install git
     else
