@@ -113,20 +113,13 @@ function create_project {
     echo "${BOLD}Project \"$1\" was successfully created.${NORMAL}"
   fi
 
-  PORT=`grep "^Port 22$" /etc/ssh/sshd_config | cut -b 6-`
-  if [ "$PORT" = "22" ]; then
-    PORT=""
-  else
-    CUSTOM_PORT=`grep "^Port " /etc/ssh/sshd_config | cut -b 6-`
-    PORT=":$CUSTOM_PORT"
-  fi
-
   IP=`curl --silent http://ifconfig.me/ip`
+  PORT=`grep "^Port " /etc/ssh/sshd_config | cut -b 6-`
 
   echo "To link up a SparkleShare client, enter the following"
   echo "details into the ${BOLD}\"Add Hosted Project...\"${NORMAL} dialog: "
   echo 
-  echo "      Address: ${BOLD}storage@$IP$PORT${NORMAL}"
+  echo "      Address: ${BOLD}storage@$IP:$PORT${NORMAL}"
   echo "  Remote Path: ${BOLD}/home/storage/$1${NORMAL}"
   echo
   echo "To link up (more) computers, use the \"dazzle link\" command."
