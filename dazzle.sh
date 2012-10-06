@@ -87,11 +87,11 @@ function install_git {
     echo " -> The Git package has already been installed (version $GIT_VERSION)."
   else 
     if [ -f "/usr/bin/yum" ]; then
-      echo " -> yum -y install git"
-      yum -y install git
+      echo " -> yum --assumeyes install git"
+      yum --assumeyes --quiet install git
     else
-      echo " -> apt-get -y install git"
-      apt-get -yq install git-core
+      echo " -> apt-get --yes install git"
+      apt-get --yes --quiet install git-core
     fi
   fi
 }
