@@ -144,6 +144,19 @@ function link_client {
   fi
 }
 
+function show_help {
+    echo "${BOLD}Dazzle, SparkleShare host setup script${NORMAL}"
+    echo "This script needs to be run as root"
+    echo
+    echo "Usage: dazzle [COMMAND]"
+    echo 
+    echo "  setup                            configures this machine to serve as a SparkleShare host"
+    echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
+    echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
+    echo "  link                             links a SparkleShare client to this host by entering a link code"
+    echo
+}
+
 
 # Parse the command line arguments
 case $1 in
@@ -167,15 +180,6 @@ case $1 in
     link_client $2
     ;;
   *|help)
-    echo "${BOLD}Dazzle, SparkleShare host setup script${NORMAL}"
-    echo "This script needs to be run as root"
-    echo
-    echo "Usage: dazzle [COMMAND]"
-    echo 
-    echo "  setup                            configures this machine to serve as a SparkleShare host"
-    echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
-    echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
-    echo "  link                             links a SparkleShare client to this host by entering a link code"
-    echo
+    show_help
     ;;
 esac
