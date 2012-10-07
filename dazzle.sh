@@ -43,7 +43,7 @@ function create_account {
 }
 
 function configure_ssh {
-  echo "${BOLD}(2/4) Configuring account \"storage\"..."
+  echo "${BOLD}(2/4) Configuring account \"storage\"...${NORMAL}"
   
   echo " -> mkdir /home/storage/.ssh"
   mkdir -p /home/storage/.ssh
