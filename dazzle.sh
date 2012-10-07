@@ -20,6 +20,9 @@ if [[ $UID -ne 0 ]]; then
   esac
 fi
   
+GIT=`which git`
+GIT_SHELL=`which git-shell`
+  
 # Define text styles
 BOLD=`tput bold`
 NORMAL=`tput sgr0`
@@ -32,8 +35,8 @@ function create_account {
   if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
   else
-    echo "-> useradd storage --create-home --user-group --shell /usr/bin/git-shell"
-    useradd storage --create-home --user-group --shell /usr/bin/git-shell
+    echo "-> useradd storage --create-home --user-group --shell $GIT_SHELL"
+    useradd storage --create-home --user-group --shell $GIT_SHELL
   fi
   
   sleep 0.5
@@ -83,7 +86,7 @@ function restart_ssh {
 function install_git {
   echo "${BOLD}(4/4) Installing the Git package...${NORMAL}"
 
-  if [ -f "/usr/bin/git" ]; then
+  if [ -n $GIT ]; then
     GIT_VERSION=`/usr/bin/git --version | cut -b 13-`
     echo " -> The Git package has already been installed (version $GIT_VERSION)."
   else 
@@ -91,7 +94,7 @@ function install_git {
       echo " -> yum --assumeyes install git"
       yum --assumeyes --quiet install git
     else
-      echo " -> apt-get --yes install git"
+      echo " -> apt-get --yes install git-core"
       apt-get --yes --quiet install git-core
     fi
   fi
@@ -105,8 +108,8 @@ function create_project {
     echo
   else
     # Create the Git repository
-    echo " -> git init --bare /home/storage/$1"
-    git init --quiet --bare /home/storage/$1
+    echo " -> $GIT init --bare /home/storage/$1"
+    $GIT init --quiet --bare /home/storage/$1
     
     # Set the right permissions
     echo " -> chown -R storage:storage /home/storage"
