@@ -22,7 +22,6 @@ fi
   
 # Define text styles
 BOLD=`tput bold`
-DIM=`tput dim`
 NORMAL=`tput sgr0`
 
 
@@ -32,7 +31,7 @@ function create_account {
   if [ `grep "^storage:" /etc/passwd | cut -b -7` = "storage" ]; then
     echo " -> Account already exists."
   else
-    echo "${DIM} -> useradd storage --create-home --user-group${NORMAL}"
+    echo "-> useradd storage --create-home --user-group"
     useradd storage --create-home --user-group
   fi
   
@@ -40,18 +39,18 @@ function create_account {
 }
 
 function configure_ssh {
-  echo "${BOLD}(2/4) Configuring account \"storage\"...${NORMAL}"
+  echo "${BOLD}(2/4) Configuring account \"storage\"..."
   
-  echo "${DIM} -> mkdir /home/storage/.ssh${NORMAL}"
+  echo " -> mkdir /home/storage/.ssh"
   mkdir -p /home/storage/.ssh
   
-  echo "${DIM} -> touch /home/storage/.ssh/authorized_keys${NORMAL}"
+  echo " -> touch /home/storage/.ssh/authorized_keys"
   touch /home/storage/.ssh/authorized_keys
 
-  echo "${DIM} -> chmod 700 /home/storage/.ssh${NORMAL}"
+  echo " -> chmod 700 /home/storage/.ssh}"
   chmod 700 /home/storage/.ssh
   
-  echo "${DIM} -> chmod 600 /home/storage/.ssh/authorized_keys${NORMAL}"
+  echo " -> chmod 600 /home/storage/.ssh/authorized_keys"
   chmod 600 /home/storage/.ssh/authorized_keys
 
   # Disable the password for the "storage" user to force authentication using a key
