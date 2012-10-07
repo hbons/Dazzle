@@ -110,6 +110,10 @@ function create_project {
     # Create the Git repository
     echo " -> $GIT init --bare /home/storage/$1"
     $GIT init --quiet --bare /home/storage/$1
+
+    # Don't allow force-pushing and data to get lost
+    echo " -> $GIT config --file /home/storage/$1/.git/config receive.denyNonFastForwards true"
+    $GIT config --file /home/storage/$1/.git/config receive.denyNonFastForwards true
     
     # Set the right permissions
     echo " -> chown --recursive storage:storage /home/storage"
