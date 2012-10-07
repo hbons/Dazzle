@@ -113,7 +113,7 @@ function create_project {
 
     # Don't allow force-pushing and data to get lost
     echo " -> $GIT config --file /home/storage/$1/.git/config receive.denyNonFastForwards true"
-    $GIT config --file /home/storage/$1/.git/config receive.denyNonFastForwards true
+    $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true
     
     # Set the right permissions
     echo " -> chown --recursive storage:storage /home/storage"
