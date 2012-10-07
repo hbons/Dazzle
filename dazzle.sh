@@ -28,7 +28,8 @@ NORMAL=`tput sgr0`
 function create_account {
   echo "${BOLD}(1/4) Creating account \"storage\"...${NORMAL}"
   
-  if [ `grep "^storage:" /etc/passwd | cut -b -7` = "storage" ]; then
+  STORAGE=`grep "^storage:" /etc/passwd | cut -b -7`
+  if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
   else
     echo "-> useradd storage --create-home --user-group"
