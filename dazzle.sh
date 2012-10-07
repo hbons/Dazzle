@@ -94,8 +94,8 @@ function install_git {
       echo " -> yum --assumeyes install git"
       yum --assumeyes --quiet install git
     else
-      echo " -> apt-get --yes install git-core"
-      apt-get --yes --quiet install git-core
+      echo " -> apt-get --yes install git"
+      apt-get --yes --quiet install git
     fi
   fi
 }
