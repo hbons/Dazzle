@@ -51,7 +51,7 @@ function configure_ssh {
   echo " -> touch /home/storage/.ssh/authorized_keys"
   touch /home/storage/.ssh/authorized_keys
 
-  echo " -> chmod 700 /home/storage/.ssh}"
+  echo " -> chmod 700 /home/storage/.ssh"
   chmod 700 /home/storage/.ssh
   
   echo " -> chmod 600 /home/storage/.ssh/authorized_keys"
