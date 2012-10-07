@@ -62,6 +62,7 @@ function configure_ssh {
     echo "# Please do not edit the above comment as it's used as a check by Dazzle" >> /etc/ssh/sshd_config
     echo "Match User storage" >> /etc/ssh/sshd_config
     echo "    PasswordAuthentication no" >> /etc/ssh/sshd_config
+    echo "    PubkeyAuthentication yes" >> /etc/ssh/sshd_config
   fi
   
   sleep 0.5
