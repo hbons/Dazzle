@@ -86,7 +86,7 @@ function restart_ssh {
 function install_git {
   echo "${BOLD}(4/4) Installing the Git package...${NORMAL}"
 
-  if [ -n $GIT ]; then
+  if [ -n "$GIT" ]; then
     GIT_VERSION=`/usr/bin/git --version | cut -b 13-`
     echo " -> The Git package has already been installed (version $GIT_VERSION)."
   else 
