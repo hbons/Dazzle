@@ -31,7 +31,7 @@ NORMAL=`tput sgr0`
 function create_account {
   echo "${BOLD}(1/4) Creating account \"storage\"...${NORMAL}"
   
-  STORAGE=`grep "^storage:" /etc/passwd | cut -b -7`
+  STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
   if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
   else
@@ -45,8 +45,8 @@ function create_account {
 function configure_ssh {
   echo "${BOLD}(2/4) Configuring account \"storage\"...${NORMAL}"
   
-  echo " -> mkdir /home/storage/.ssh"
-  mkdir -p /home/storage/.ssh
+  echo " -> mkdir --parents /home/storage/.ssh"
+  mkdir --parents /home/storage/.ssh
   
   echo " -> touch /home/storage/.ssh/authorized_keys"
   touch /home/storage/.ssh/authorized_keys
@@ -112,8 +112,8 @@ function create_project {
     $GIT init --quiet --bare /home/storage/$1
     
     # Set the right permissions
-    echo " -> chown -R storage:storage /home/storage"
-    chown -R storage:storage /home/storage
+    echo " -> chown --recursive storage:storage /home/storage"
+    chown --recursive storage:storage /home/storage
 
     sleep 0.5
 
