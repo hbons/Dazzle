@@ -32,8 +32,8 @@ function create_account {
   if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
   else
-    echo "-> useradd storage --create-home --user-group"
-    useradd storage --create-home --user-group
+    echo "-> useradd storage --create-home --user-group --shell /usr/bin/git-shell"
+    useradd storage --create-home --user-group --shell /usr/bin/git-shell
   fi
   
   sleep 0.5
