@@ -13,9 +13,9 @@ if [[ $UID -ne 0 ]]; then
     ""|help) # You should be allowed to check the help without being root
       ;;
     *)
-      echo "Sorry, but Dazzle needs to be run as root"
+      echo "Sorry, but Dazzle needs to be run as root."
       exit 1
-    ;;
+      ;;
   esac
 fi
   
@@ -28,8 +28,6 @@ NORMAL=`tput sgr0`
 
 
 create_account () {
-  echo "${BOLD}(1/4) Creating account \"storage\"...${NORMAL}"
-  
   STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
   if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
@@ -42,8 +40,6 @@ create_account () {
 }
 
 configure_ssh () {
-  echo "${BOLD}(2/4) Configuring account \"storage\"...${NORMAL}"
-  
   echo " -> mkdir --parents /home/storage/.ssh"
   mkdir --parents /home/storage/.ssh
   
@@ -71,11 +67,12 @@ configure_ssh () {
 }
 
 restart_ssh () {
-  echo "${BOLD}(3/4) Restarting the SSH service...${NORMAL}"
-  
   if [ -f "/etc/init.d/sshd" ]; then
     echo " -> /etc/init.d/sshd restart"
     /etc/init.d/sshd restart >/dev/null
+  elif [ -f "/etc/rc.d/sshd" ]; then
+    echo " -> /etc/rc.d/sshd restart"
+    /etc/rc.d/sshd restart >/dev/null
   else
     echo " -> /etc/init.d/ssh restart"
     /etc/init.d/ssh restart >/dev/null
@@ -83,8 +80,6 @@ restart_ssh () {
 }
 
 install_git () {
-  echo "${BOLD}(4/4) Installing the Git package...${NORMAL}"
-
   if [ -n "$GIT" ]; then
     GIT_VERSION=`/usr/bin/git --version | cut -b 13-`
     echo " -> The Git package has already been installed (version $GIT_VERSION)."
@@ -110,8 +105,6 @@ install_git () {
 }
 
 create_project () {
-  echo "${BOLD}Creating project \"$1\"...${NORMAL}"
-
   if [ -f "/home/storage/$1/HEAD" ]; then
     echo " -> Project \"$1\" already exists."
     echo
@@ -185,19 +178,25 @@ show_help () {
 # Parse the command line arguments
 case $1 in
   setup)
+    echo "${BOLD}(1/4) Creating account \"storage\"...${NORMAL}"
     create_account
+    echo "${BOLD}(2/4) Configuring account \"storage\"...${NORMAL}"
     configure_ssh
+    echo "${BOLD}(3/4) Restarting the SSH service...${NORMAL}"
     restart_ssh
+    echo "${BOLD}(4/4) Installing the Git package...${NORMAL}"
     install_git
     echo
     echo "${BOLD}Setup complete!${NORMAL}"
     echo "To create a new project, run \"dazzle create PROJECT_NAME\"."
     echo
     ;;
-  create)
+  create)    
+    echo "${BOLD}Creating project \"$2\"...${NORMAL}"
     create_project $2
     ;;
   create-encrypted)
+    echo "${BOLD}Creating encrypted project \"$2\"...${NORMAL}"
     create_project $2-crypto
     ;;
   link)
