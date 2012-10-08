@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # This program is free software. It comes without any warranty, to
 # the extent permitted by applicable law. You can redistribute it
@@ -28,7 +28,7 @@ BOLD=`tput bold`
 NORMAL=`tput sgr0`
 
 
-function create_account {
+create_account () {
   echo "${BOLD}(1/4) Creating account \"storage\"...${NORMAL}"
   
   STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
@@ -42,7 +42,7 @@ function create_account {
   sleep 0.5
 }
 
-function configure_ssh {
+configure_ssh () {
   echo "${BOLD}(2/4) Configuring account \"storage\"...${NORMAL}"
   
   echo " -> mkdir --parents /home/storage/.ssh"
@@ -71,7 +71,7 @@ function configure_ssh {
   sleep 0.5
 }
 
-function restart_ssh {
+restart_ssh () {
   echo "${BOLD}(3/4) Restarting the SSH service...${NORMAL}"
   
   if [ -f "/etc/init.d/sshd" ]; then
@@ -83,7 +83,7 @@ function restart_ssh {
   fi
 }
 
-function install_git {
+install_git () {
   echo "${BOLD}(4/4) Installing the Git package...${NORMAL}"
 
   if [ -n "$GIT" ]; then
@@ -100,7 +100,7 @@ function install_git {
   fi
 }
 
-function create_project {
+create_project () {
   echo "${BOLD}Creating project \"$1\"...${NORMAL}"
 
   if [ -f "/home/storage/$1/HEAD" ]; then
@@ -140,7 +140,7 @@ function create_project {
   echo
 }
 
-function link_client {
+link_client () {
   # Ask the user for the link code with a prompt
   echo "Paste the contents of ${BOLD}\"~/SparkleShare/Your Name's link code.txt\"${NORMAL}"
   echo "(found on the client) into the field below and press ${BOLD}<ENTER>${NORMAL}."
@@ -159,7 +159,7 @@ function link_client {
   fi
 }
 
-function show_help {
+show_help () {
     echo "${BOLD}Dazzle, SparkleShare host setup script${NORMAL}"
     echo "This script needs to be run as root"
     echo
