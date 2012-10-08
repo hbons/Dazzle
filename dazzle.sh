@@ -137,7 +137,7 @@ create_project () {
 
   # Fetch the external IP address
   IP=`curl --silent http://ifconfig.me/ip`
-  PORT=`grep "^Port " /etc/ssh/sshd_config | cut -b 6-`
+  PORT=`grep -m 1 "^Port " /etc/ssh/sshd_config | cut -b 6-`
 
   # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
