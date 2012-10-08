@@ -89,13 +89,23 @@ install_git () {
   if [ -n "$GIT" ]; then
     GIT_VERSION=`/usr/bin/git --version | cut -b 13-`
     echo " -> The Git package has already been installed (version $GIT_VERSION)."
-  else 
+  else
     if [ -f "/usr/bin/yum" ]; then
       echo " -> yum --assumeyes install git"
       yum --assumeyes --quiet install git
-    else
+    elif [ -f "/usr/bin/apt-get" ]; then
       echo " -> apt-get --yes install git"
       apt-get --yes --quiet install git
+    elif [ -f "/usr/bin/zypper" ]; then
+      echo " -> zypper --yes install git-core"
+      zypper --yes --quiet install git-core
+    elif [ -f "/usr/bin/emerge" ]; then
+      echo " -> emerge dev-vcs/git"
+      emerge --quiet dev-vcs/git
+    else
+      echo "${BOLD}Could not install Git... Please install it before continuing.{$NORMAL}"
+      echo
+      exit 1
     fi
   fi
 }
