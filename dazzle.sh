@@ -10,8 +10,7 @@
 # Check if we're root, if not show a warning
 if [[ $UID -ne 0 ]]; then
   case $1 in
-    help)
-      # You should be allowed to check the help without root
+    ""|help) # You should be allowed to check the help without being root
       ;;
     *)
       echo "Sorry, but Dazzle needs to be run as root"
@@ -35,8 +34,8 @@ create_account () {
   if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
   else
-    echo "-> useradd storage --create-home --user-group --shell $GIT_SHELL"
-    useradd storage --create-home --user-group --shell $GIT_SHELL
+    echo " -> useradd storage --create-home --user-group --shell $GIT_SHELL --password \"*\""
+    useradd storage --create-home --user-group --shell $GIT_SHELL --password "*"
   fi
   
   sleep 0.5
@@ -137,7 +136,7 @@ create_project () {
 
   # Fetch the external IP address
   IP=`curl --silent http://ifconfig.me/ip`
-  PORT=`grep "^Port " /etc/ssh/sshd_config | cut -b 6-`
+  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut -b 6-`
 
   # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
