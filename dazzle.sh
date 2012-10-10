@@ -42,15 +42,17 @@ show_help () {
 
 create_account () {
   STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
+  
   if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
   else
-    groups storage >/dev/null
-    if ["$?" = "1"]; then
+    STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
+    
+    if [ "$STORAGE" = "storage" ]; then
       echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
       useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
     else
-      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\"" --gid storage
+      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
       useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
     fi
   fi
