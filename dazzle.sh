@@ -49,11 +49,11 @@ create_account () {
     STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
     
     if [ "$STORAGE" = "storage" ]; then
-      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
-    else
       echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
       useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
+    else
+      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
+      useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
     fi
   fi
   
