@@ -27,13 +27,32 @@ BOLD=`tput bold`
 NORMAL=`tput sgr0`
 
 
+show_help () {
+    echo "${BOLD}Dazzle, SparkleShare host setup script${NORMAL}"
+    echo "This script needs to be run as root"
+    echo
+    echo "Usage: dazzle [COMMAND]"
+    echo 
+    echo "  setup                            configures this machine to serve as a SparkleShare host"
+    echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
+    echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
+    echo "  link                             links a SparkleShare client to this host by entering a link code"
+    echo
+}
+
 create_account () {
   STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
   if [ "$STORAGE" = "storage" ]; then
     echo " -> Account already exists."
   else
-    echo " -> useradd storage --create-home --user-group --shell $GIT_SHELL --password \"*\""
-    useradd storage --create-home --user-group --shell $GIT_SHELL --password "*"
+    groups storage >/dev/null
+    if ["$?" = "1"]; then
+      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
+      useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
+    else
+      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\"" --gid storage
+      useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
+    fi
   fi
   
   sleep 0.5
@@ -81,7 +100,7 @@ restart_ssh () {
 
 install_git () {
   if [ -n "$GIT" ]; then
-    GIT_VERSION=`/usr/bin/git --version | cut -b 13-`
+    GIT_VERSION=`/usr/bin/git --version | cut --bytes=13-`
     echo " -> The Git package has already been installed (version $GIT_VERSION)."
   else
     if [ -f "/usr/bin/yum" ]; then
@@ -129,7 +148,7 @@ create_project () {
 
   # Fetch the external IP address
   IP=`curl --silent http://ifconfig.me/ip`
-  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut -b 6-`
+  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut --bytes=6-`
 
   # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
@@ -147,7 +166,7 @@ link_client () {
   echo "Paste the contents of ${BOLD}\"~/SparkleShare/Your Name's link code.txt\"${NORMAL}"
   echo "(found on the client) into the field below and press ${BOLD}<ENTER>${NORMAL}."
   echo 
-  echo -n "${BOLD}Link code: ${NORMAL}"
+  echo -n " ${BOLD}Link code: ${NORMAL}"
   read LINK_CODE
   
   if [ ${#SHELL} > 256 ]; then
@@ -161,30 +180,17 @@ link_client () {
   fi
 }
 
-show_help () {
-    echo "${BOLD}Dazzle, SparkleShare host setup script${NORMAL}"
-    echo "This script needs to be run as root"
-    echo
-    echo "Usage: dazzle [COMMAND]"
-    echo 
-    echo "  setup                            configures this machine to serve as a SparkleShare host"
-    echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
-    echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
-    echo "  link                             links a SparkleShare client to this host by entering a link code"
-    echo
-}
-
 
 # Parse the command line arguments
 case $1 in
   setup)
-    echo "${BOLD}(1/4) Creating account \"storage\"...${NORMAL}"
+    echo "${BOLD} 1/4 | Creating account \"storage\"...${NORMAL}"
     create_account
-    echo "${BOLD}(2/4) Configuring account \"storage\"...${NORMAL}"
+    echo "${BOLD} 2/4 | Configuring account \"storage\"...${NORMAL}"
     configure_ssh
-    echo "${BOLD}(3/4) Restarting the SSH service...${NORMAL}"
+    echo "${BOLD} 3/4 | Restarting the SSH service...${NORMAL}"
     restart_ssh
-    echo "${BOLD}(4/4) Installing the Git package...${NORMAL}"
+    echo "${BOLD} 4/4 | Installing the Git package...${NORMAL}"
     install_git
     echo
     echo "${BOLD}Setup complete!${NORMAL}"
