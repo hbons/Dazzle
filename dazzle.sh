@@ -20,7 +20,6 @@ if [[ $UID -ne 0 ]]; then
 fi
   
 GIT=`which git`
-GIT_SHELL=`which git-shell`
   
 # Define text styles
 BOLD=`tput bold`
@@ -47,6 +46,7 @@ create_account () {
     echo " -> Account already exists."
   else
     STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
+    GIT_SHELL=`which git-shell`
     
     if [ "$STORAGE" = "storage" ]; then
       echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
