@@ -186,14 +186,14 @@ link_client () {
 # Parse the command line arguments
 case $1 in
   setup)
-    echo "${BOLD} 1/4 | Creating account \"storage\"...${NORMAL}"
-    create_account
-    echo "${BOLD} 2/4 | Configuring account \"storage\"...${NORMAL}"
-    configure_ssh
-    echo "${BOLD} 3/4 | Restarting the SSH service...${NORMAL}"
-    restart_ssh
-    echo "${BOLD} 4/4 | Installing the Git package...${NORMAL}"
+    echo "${BOLD} 1/4 | Installing the Git package...${NORMAL}"
     install_git
+    echo "${BOLD} 2/4 | Creating account \"storage\"...${NORMAL}"
+    create_account
+    echo "${BOLD} 3/4 | Configuring account \"storage\"...${NORMAL}"
+    configure_ssh
+    echo "${BOLD} 4/4 | Restarting the SSH service...${NORMAL}"
+    restart_ssh
     echo
     echo "${BOLD}Setup complete!${NORMAL}"
     echo "To create a new project, run \"dazzle create PROJECT_NAME\"."
