@@ -43,16 +43,16 @@ create_account () {
   STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
   
   if [ "$STORAGE" = "storage" ]; then
-    echo " -> Account already exists."
+    echo "  -> Account already exists."
   else
     STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
     GIT_SHELL=`which git-shell`
     
     if [ "$STORAGE" = "storage" ]; then
-      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
+      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
       useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
     else
-      echo " -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
+      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
       useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
     fi
   fi
@@ -61,16 +61,16 @@ create_account () {
 }
 
 configure_ssh () {
-  echo " -> mkdir --parents /home/storage/.ssh"
+  echo "  -> mkdir --parents /home/storage/.ssh"
   mkdir --parents /home/storage/.ssh
   
-  echo " -> touch /home/storage/.ssh/authorized_keys"
+  echo "  -> touch /home/storage/.ssh/authorized_keys"
   touch /home/storage/.ssh/authorized_keys
 
-  echo " -> chmod 700 /home/storage/.ssh"
+  echo "  -> chmod 700 /home/storage/.ssh"
   chmod 700 /home/storage/.ssh
   
-  echo " -> chmod 600 /home/storage/.ssh/authorized_keys"
+  echo "  -> chmod 600 /home/storage/.ssh/authorized_keys"
   chmod 600 /home/storage/.ssh/authorized_keys
 
   # Disable the password for the "storage" user to force authentication using a key
@@ -89,13 +89,13 @@ configure_ssh () {
 
 restart_ssh () {
   if [ -f "/etc/init.d/sshd" ]; then
-    echo " -> /etc/init.d/sshd restart"
+    echo "  -> /etc/init.d/sshd restart"
     /etc/init.d/sshd restart >/dev/null
   elif [ -f "/etc/rc.d/sshd" ]; then
-    echo " -> /etc/rc.d/sshd restart"
+    echo "  -> /etc/rc.d/sshd restart"
     /etc/rc.d/sshd restart >/dev/null
   else
-    echo " -> /etc/init.d/ssh restart"
+    echo "  -> /etc/init.d/ssh restart"
     /etc/init.d/ssh restart >/dev/null
   fi
 }
@@ -103,24 +103,24 @@ restart_ssh () {
 install_git () {
   if [ -n "$GIT" ]; then
     GIT_VERSION=`/usr/bin/git --version | cut --bytes=13-`
-    echo " -> The Git package has already been installed (version $GIT_VERSION)."
+    echo "  -> The Git package has already been installed (version $GIT_VERSION)."
   else
     if [ -f "/usr/bin/yum" ]; then
-      echo " -> yum --assumeyes install git"
+      echo "  -> yum --assumeyes install git"
       yum --assumeyes --quiet install git
     elif [ -f "/usr/bin/apt-get" ]; then
-      echo " -> apt-get --yes install git"
+      echo "  -> apt-get --yes install git"
       apt-get --yes --quiet install git
       
       if [ $? -ne 0 ]; then
-        echo " -> apt-get --yes install git-core"
+        echo "  -> apt-get --yes install git-core"
         apt-get --yes --quiet install git-core
       fi 
     elif [ -f "/usr/bin/zypper" ]; then
-      echo " -> zypper --yes install git-core"
+      echo "  -> zypper --yes install git-core"
       zypper --yes --quiet install git-core
     elif [ -f "/usr/bin/emerge" ]; then
-      echo " -> emerge dev-vcs/git"
+      echo "  -> emerge dev-vcs/git"
       emerge --quiet dev-vcs/git
     else
       echo "${BOLD}Could not install Git... Please install it before continuing.{$NORMAL}"
@@ -132,19 +132,19 @@ install_git () {
 
 create_project () {
   if [ -f "/home/storage/$1/HEAD" ]; then
-    echo " -> Project \"$1\" already exists."
+    echo "  -> Project \"$1\" already exists."
     echo
   else
     # Create the Git repository
-    echo " -> $GIT init --bare /home/storage/$1"
+    echo "  -> $GIT init --bare /home/storage/$1"
     $GIT init --quiet --bare /home/storage/$1
 
     # Don't allow force-pushing and data to get lost
-    echo " -> $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true"
+    echo "  -> $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true"
     $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true
     
     # Set the right permissions
-    echo " -> chown --recursive storage:storage /home/storage"
+    echo "  -> chown --recursive storage:storage /home/storage"
     chown --recursive storage:storage /home/storage
 
     sleep 0.5
