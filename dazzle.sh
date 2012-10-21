@@ -111,6 +111,11 @@ install_git () {
     elif [ -f "/usr/bin/apt-get" ]; then
       echo " -> apt-get --yes install git"
       apt-get --yes --quiet install git
+      
+      if [ $? -ne 0 ]; then
+        echo " -> apt-get --yes install git-core"
+        apt-get --yes --quiet install git-core
+      fi 
     elif [ -f "/usr/bin/zypper" ]; then
       echo " -> zypper --yes install git-core"
       zypper --yes --quiet install git-core
