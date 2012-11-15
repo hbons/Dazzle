@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This program is free software. It comes without any warranty, to
 # the extent permitted by applicable law. You can redistribute it
@@ -6,6 +6,18 @@
 # To Public License, Version 2, as published by Sam Hocevar. See
 # http://sam.zoy.org/wtfpl/COPYING for more details.
 
+# Check if the system is supported by using bash variable $OSTYPE - see man
+SYS_LINUX=
+SYS_FREEBSD=
+case $OSTYPE in
+  linux-gnu*) SYS_LINUX=1
+    ;;
+  freebsd*) SYS_FREEBSD=1
+    ;;
+  *) echo "Sorry, your system $OSTYPE is not supported by Dazzle yet."
+    exit 1
+    ;;
+esac
 
 # Check if we're root, if not show a warning
 if [[ $UID -ne 0 ]]; then
@@ -20,7 +32,7 @@ if [[ $UID -ne 0 ]]; then
 fi
   
 GIT=`which git`
-  
+
 # Define text styles
 BOLD=`tput bold`
 NORMAL=`tput sgr0`
@@ -40,29 +52,48 @@ show_help () {
 }
 
 create_account () {
-  STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
+  STORAGE=`grep "^storage:" /etc/passwd | cut -b -7`
   
   if [ "$STORAGE" = "storage" ]; then
     echo "  -> Account already exists."
   else
-    STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
+    STORAGE=`grep "^storage:" /etc/group | cut -b -7`
     GIT_SHELL=`which git-shell`
     
     if [ "$STORAGE" = "storage" ]; then
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
+      if [ "$SYS_LINUX" ]; then 
+        echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
+        useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
+      # FreeBSD uses pw useradd 
+      elif [ "$SYS_FREEBSD" ]; then
+        echo "  -> echo \"*\" | pw user add -n storage -g storage -m -s $GIT_SHELL -c \"SparkleShare user\" -h 0"	
+        echo "*" | pw user add -n storage -g storage -m -s $GIT_SHELL -c "SparkleShare user" -h 0
+      fi
     else
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
+      if [ "$SYS_LINUX" ]; then
+        echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
+        useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
+      elif [ "$SYS_FREEBSD" ]; then
+        echo "  -> pw groupadd -n storage"
+        echo "  -> echo \"*\" | pw user add -n storage -g storage -m -s $GIT_SHELL -c \"SparkleShare user\" -h 0" 
+        pw groupadd -n storage
+        echo "*" | pw user add -n storage -g storage -m -s $GIT_SHELL -c "SparkleShare user" -h 0 
+      fi
     fi
+  fi
+  # check if user has been created
+  STORAGE=`grep "^storage:" /etc/passwd | cut -b -7`
+  if [ "$STORAGE" != "storage"  ]; then
+    echo "Sorry, the user 'storage' could not be created."
+    exit 1	
   fi
   
   sleep 0.5
 }
 
 configure_ssh () {
-  echo "  -> mkdir --parents /home/storage/.ssh"
-  mkdir --parents /home/storage/.ssh
+  echo "  -> mkdir -p /home/storage/.ssh"
+  mkdir -p /home/storage/.ssh
   
   echo "  -> touch /home/storage/.ssh/authorized_keys"
   touch /home/storage/.ssh/authorized_keys
@@ -102,7 +133,7 @@ restart_ssh () {
 
 install_git () {
   if [ -n "$GIT" ]; then
-    GIT_VERSION=`/usr/bin/git --version | cut --bytes=13-`
+    GIT_VERSION=`$GIT --version | cut -b 13-`
     echo "  -> The Git package has already been installed (version $GIT_VERSION)."
   else
     if [ -f "/usr/bin/yum" ]; then
@@ -122,6 +153,10 @@ install_git () {
     elif [ -f "/usr/bin/emerge" ]; then
       echo "  -> emerge dev-vcs/git"
       emerge --quiet dev-vcs/git
+    # ports directory containing git under FreeBSD
+    elif [ -f "/usr/ports/devel/git/Makefile" ]; then
+      echo "  -> cd /usr/ports/devel/git | make install clean"
+      cd /usr/ports/devel/git && make install clean
     else
       echo "${BOLD}Could not install Git... Please install it before continuing.{$NORMAL}"
       echo
@@ -145,7 +180,7 @@ create_project () {
     
     # Set the right permissions
     echo "  -> chown --recursive storage:storage /home/storage"
-    chown --recursive storage:storage /home/storage
+    chown -R storage:storage /home/storage
 
     sleep 0.5
 
@@ -155,7 +190,7 @@ create_project () {
 
   # Fetch the external IP address
   IP=`curl --silent http://ifconfig.me/ip`
-  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut --bytes=6-`
+  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut -b 6-`
 
   # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
