@@ -51,6 +51,7 @@ create_account () {
     if [ "$STORAGE" = "storage" ]; then
       echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
       useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
+
     else
       echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
       useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
@@ -91,9 +92,11 @@ restart_ssh () {
   if [ -f "/etc/init.d/sshd" ]; then
     echo "  -> /etc/init.d/sshd restart"
     /etc/init.d/sshd restart >/dev/null
+
   elif [ -f "/etc/rc.d/sshd" ]; then
     echo "  -> /etc/rc.d/sshd restart"
     /etc/rc.d/sshd restart >/dev/null
+
   else
     echo "  -> /etc/init.d/ssh restart"
     /etc/init.d/ssh restart >/dev/null
@@ -104,10 +107,12 @@ install_git () {
   if [ -n "$GIT" ]; then
     GIT_VERSION=`$GIT --version | cut --bytes=13-`
     echo "  -> The Git package has already been installed (version $GIT_VERSION)."
+
   else
     if [ -f "/usr/bin/yum" ]; then
       echo "  -> yum --assumeyes install git"
       yum --assumeyes --quiet install git
+
     elif [ -f "/usr/bin/apt-get" ]; then
       echo "  -> apt-get --yes install git"
       apt-get --yes --quiet install git
@@ -115,15 +120,18 @@ install_git () {
       if [ $? -ne 0 ]; then
         echo "  -> apt-get --yes install git-core"
         apt-get --yes --quiet install git-core
-      fi 
+      fi
+
     elif [ -f "/usr/bin/zypper" ]; then
       echo "  -> zypper --yes install git-core"
       zypper --yes --quiet install git-core
+
     elif [ -f "/usr/bin/emerge" ]; then
       echo "  -> emerge dev-vcs/git"
       emerge --quiet dev-vcs/git
+
     else
-      echo "${BOLD}Could not install Git... Please install it before continuing.{$NORMAL}"
+      echo "${BOLD}Could not install Git... Please install it manually before continuing.{$NORMAL}"
       echo
       exit 1
     fi
@@ -182,6 +190,7 @@ link_client () {
     echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
     echo "Repeat this step to link more clients."
     echo
+
   else
     echo "${BOLD}Not a valid link code...${NORMAL}"
   fi
@@ -204,17 +213,21 @@ case $1 in
     echo "To create a new project, run \"dazzle create PROJECT_NAME\"."
     echo
     ;;
+
   create)    
     echo "${BOLD}Creating project \"$2\"...${NORMAL}"
     create_project $2
     ;;
+
   create-encrypted)
     echo "${BOLD}Creating encrypted project \"$2\"...${NORMAL}"
     create_project $2-crypto
     ;;
+
   link)
     link_client $2
     ;;
+
   *|help)
     show_help
     ;;
