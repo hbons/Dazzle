@@ -102,7 +102,7 @@ restart_ssh () {
 
 install_git () {
   if [ -n "$GIT" ]; then
-    GIT_VERSION=`/usr/bin/git --version | cut --bytes=13-`
+    GIT_VERSION=`$GIT --version | cut --bytes=13-`
     echo "  -> The Git package has already been installed (version $GIT_VERSION)."
   else
     if [ -f "/usr/bin/yum" ]; then
