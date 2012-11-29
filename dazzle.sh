@@ -40,21 +40,38 @@ show_help () {
 }
 
 create_account () {
-  STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
+  USERNAME=storage
+  GROUPNAME=storage
   
-  if [ "$STORAGE" = "storage" ]; then
+  PATH=/usr/sbin:/sbin:$PATH
+  
+  # create user account if it does not exist
+  U=`grep "^${USERNAME}:" /etc/passwd | cut --bytes=-7`
+  if [ "$U" = "$USERNAME" ]; then
     echo "  -> Account already exists."
   else
-    STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
-    GIT_SHELL=`which git-shell`
-    
-    if [ "$STORAGE" = "storage" ]; then
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
-
+    # create group account if it does not exist
+    G=`grep "^${GROUPNAME}:" /etc/group | cut --bytes=-7`
+    if [ "$G" = "$GROUPNAME" ]; then
+      echo "  -> Group already exists."
     else
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
+      GROUP_ADD=`which groupadd 2> /dev/null`
+      if [ $? -eq 0 ]; then
+        echo "  -> $GROUP_ADD $GROUPNAME"
+        $GROUP_ADD $GROUPNAME
+      else
+        echo "Manually create the $GROUPNAME group"
+      fi
+    fi
+    
+    # create user account
+    GIT_SHELL=`which git-shell`
+    USER_ADD=`which useradd 2> /dev/null`
+    if [ $? -eq 0 ]; then
+      echo "  -> $USER_ADD $USERNAME --create-home --shell $GIT_SHELL --password \"*\" --gid $GROUPNAME"
+      $USER_ADD $USERNAME --create-home --shell $GIT_SHELL --password "*" --gid $GROUPNAME
+    else
+      echo "Manually create the $USERNAME user"
     fi
   fi
   
