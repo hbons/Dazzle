@@ -6,7 +6,7 @@
 # To Public License, Version 2, as published by Sam Hocevar. See
 # http://sam.zoy.org/wtfpl/COPYING for more details.
 
-# Check if the system is supported by using bash variable $OSTYPE - see man
+# Check if the system is supported by using bash variable $OSTYPE - see 'man bash'
 SYS_LINUX=
 SYS_FREEBSD=
 case $OSTYPE in
@@ -19,13 +19,13 @@ case $OSTYPE in
     ;;
 esac
 
-# Check if we're root, if not show a warning
-if [[ $UID -ne 0 ]]; then
+# Check if we're root or are run via a sudo variant, if not show a warning
+if [[ $EUID -ne 0 ]]; then
   case $1 in
     ""|help) # You should be allowed to check the help without being root
       ;;
     *)
-      echo "Sorry, but Dazzle needs to be run as root."
+      echo "Sorry, but Dazzle needs to be run with root privileges."
       exit 1
       ;;
   esac
@@ -64,7 +64,7 @@ create_account () {
       if [ "$SYS_LINUX" ]; then 
         echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
         useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
-      # FreeBSD uses pw useradd 
+      # FreeBSD uses 'pw useradd' 
       elif [ "$SYS_FREEBSD" ]; then
         echo "  -> echo \"*\" | pw user add -n storage -g storage -m -s $GIT_SHELL -c \"SparkleShare user\" -h 0"	
         echo "*" | pw user add -n storage -g storage -m -s $GIT_SHELL -c "SparkleShare user" -h 0
@@ -159,6 +159,7 @@ install_git () {
     elif [ -f "/usr/bin/emerge" ]; then
       echo "  -> emerge dev-vcs/git"
       emerge --quiet dev-vcs/git
+    
     # ports directory containing git under FreeBSD
     elif [ -f "/usr/ports/devel/git/Makefile" ]; then
       echo "  -> cd /usr/ports/devel/git | make install clean"
