@@ -156,11 +156,11 @@ create_project () {
     for EXTENSION in $EXTENSIONS; do
       echo -ne "  -> echo \"*.$EXTENSION -delta\" >> /home/storage/$1/info/attributes   \r"
       echo "*.$EXTENSION -delta" >> /home/storage/$1/info/attributes
-      sleep 0.1
+      sleep 0.05
       EXTENSION_UPPERCASE=`echo $EXTENSION | tr '[:lower:]' '[:upper:]'`
       echo -ne "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> /home/storage/$1/info/attributes   \r"
       echo "*.$EXTENSION_UPPERCASE -delta" >> /home/storage/$1/info/attributes
-      sleep 0.1
+      sleep 0.05
     done
             
     # Set the right permissions
