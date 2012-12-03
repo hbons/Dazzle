@@ -151,9 +151,6 @@ create_project () {
     echo "  -> $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true"
     $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true
 
-    echo "  -> mkdir /home/storage/$1/info"
-    mkdir /home/storage/$1/info
-
     # Add list of files that Git should not compress    
     EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak tar iso"
     for EXTENSION in $EXTENSIONS; do
