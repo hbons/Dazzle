@@ -150,7 +150,22 @@ create_project () {
     # Don't allow force-pushing and data to get lost
     echo "  -> $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true"
     $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true
-    
+
+    echo "  -> mkdir /home/storage/$1/info"
+    mkdir /home/storage/$1/info
+
+    # Add list of files that Git should not compress    
+    EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak tar iso"
+    for EXTENSION in $EXTENSIONS; do
+      echo "*.$EXTENSION -delta" >> /home/storage/$1/info/attributes
+      echo -e "\r  -> echo \"*.$EXTENSION -delta\" >> /home/storage/$1/info/attributes"
+      sleep 0.1
+      EXTENSION_UPPERCASE=`echo $EXTENSION | tr '[:lower:]' '[:upper:]'`
+      echo "*.$EXTENSION_UPPERCASE -delta" >> /home/storage/$1/info/attributes
+      echo -e "\r  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> /home/storage/$1/info/attributes"
+      sleep 0.1
+    done
+            
     # Set the right permissions
     echo "  -> chown --recursive storage:storage /home/storage"
     chown --recursive storage:storage /home/storage
@@ -169,7 +184,7 @@ create_project () {
   echo "To link up a SparkleShare client, enter the following"
   echo "details into the ${BOLD}\"Add Hosted Project...\"${NORMAL} dialog: "
   echo 
-  echo "      Address: ${BOLD}storage@$IP:$PORT${NORMAL}"
+  echo "      Address: ${BOLD}ssh://storage@$IP:$PORT${NORMAL}"
   echo "  Remote Path: ${BOLD}/home/storage/$1${NORMAL}"
   echo
   echo "To link up (more) computers, use the \"dazzle link\" command."
@@ -232,3 +247,4 @@ case $1 in
     show_help
     ;;
 esac
+
