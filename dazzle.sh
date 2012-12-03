@@ -154,12 +154,12 @@ create_project () {
     # Add list of files that Git should not compress    
     EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak tar iso"
     for EXTENSION in $EXTENSIONS; do
+      echo -e "  -> echo \"*.$EXTENSION -delta\" >> /home/storage/$1/info/attributes   \r"
       echo "*.$EXTENSION -delta" >> /home/storage/$1/info/attributes
-      echo -e "\r  -> echo \"*.$EXTENSION -delta\" >> /home/storage/$1/info/attributes"
       sleep 0.1
       EXTENSION_UPPERCASE=`echo $EXTENSION | tr '[:lower:]' '[:upper:]'`
+      echo -e "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> /home/storage/$1/info/attributes   \r"
       echo "*.$EXTENSION_UPPERCASE -delta" >> /home/storage/$1/info/attributes
-      echo -e "\r  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> /home/storage/$1/info/attributes"
       sleep 0.1
     done
             
