@@ -88,7 +88,7 @@ configure_ssh () {
   sleep 0.5
 }
 
-restart_ssh () {
+reload_ssh_config () {
   if [ -f "/etc/init.d/sshd" ]; then
     echo "  -> /etc/init.d/sshd reload"
     /etc/init.d/sshd reload >/dev/null
@@ -220,8 +220,8 @@ case $1 in
     create_account
     echo "${BOLD} 3/4 | Configuring account \"storage\"...${NORMAL}"
     configure_ssh
-    echo "${BOLD} 4/4 | Restarting the SSH service...${NORMAL}"
-    restart_ssh
+    echo "${BOLD} 4/4 | Reloading the SSH config...${NORMAL}"
+    reload_ssh_config
     echo
     echo "${BOLD}Setup complete!${NORMAL}"
     echo "To create a new project, run \"dazzle create PROJECT_NAME\"."
