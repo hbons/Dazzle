@@ -90,16 +90,16 @@ configure_ssh () {
 
 restart_ssh () {
   if [ -f "/etc/init.d/sshd" ]; then
-    echo "  -> /etc/init.d/sshd restart"
-    /etc/init.d/sshd restart >/dev/null
+    echo "  -> /etc/init.d/sshd reload"
+    /etc/init.d/sshd reload >/dev/null
 
   elif [ -f "/etc/rc.d/sshd" ]; then
-    echo "  -> /etc/rc.d/sshd restart"
-    /etc/rc.d/sshd restart >/dev/null
+    echo "  -> /etc/rc.d/sshd reload"
+    /etc/rc.d/sshd reload >/dev/null
 
   else
-    echo "  -> /etc/init.d/ssh restart"
-    /etc/init.d/ssh restart >/dev/null
+    echo "  -> /etc/init.d/ssh reload"
+    /etc/init.d/ssh reload >/dev/null
   fi
 }
 
