@@ -152,7 +152,7 @@ create_project () {
     $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true
 
     # Add list of files that Git should not compress    
-    EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak tar iso"
+    EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak iso"
     for EXTENSION in $EXTENSIONS; do
       sleep 0.05
       echo -ne "  -> echo \"*.$EXTENSION -delta\" >> /home/storage/$1/info/attributes      \r"
