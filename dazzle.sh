@@ -6,7 +6,6 @@
 # To Public License, Version 2, as published by Sam Hocevar. See
 # http://sam.zoy.org/wtfpl/COPYING for more details.
 
-
 # Check if we're root, if not show a warning
 if [[ $UID -ne 0 ]]; then
   case $1 in
@@ -18,9 +17,12 @@ if [[ $UID -ne 0 ]]; then
       ;;
   esac
 fi
-  
+
 GIT=`which git`
-  
+
+# Define the name of the user that will be used for storage (NOT YOUR USERNAME)
+STORUSER=storage
+
 # Define text styles
 BOLD=`tput bold`
 NORMAL=`tput sgr0`
@@ -40,21 +42,21 @@ show_help () {
 }
 
 create_account () {
-  STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
+  STORAGE=`grep "^$STORUSER:" /etc/passwd | cut --bytes=-7`
   
-  if [ "$STORAGE" = "storage" ]; then
+  if [ "$STORAGE" = "$STORUSER" ]; then
     echo "  -> Account already exists."
   else
-    STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
+    STORAGE=`grep "^$STORUSER:" /etc/group | cut --bytes=-7`
     GIT_SHELL=`which git-shell`
     
-    if [ "$STORAGE" = "storage" ]; then
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
+    if [ "$STORAGE" = "$STORUSER" ]; then
+      echo "  -> useradd $STORUSER --create-home --shell $GIT_SHELL --password \"*\" --gid $STORUSER"
+      useradd $STORUSER --create-home --shell $GIT_SHELL --password "*" --gid $STORUSER
 
     else
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
+      echo "  -> useradd $STORUSER --create-home --shell $GIT_SHELL --password \"*\" --user-group"
+      useradd $STORUSER --create-home --shell $GIT_SHELL --password "*" --user-group
     fi
   fi
   
@@ -62,25 +64,25 @@ create_account () {
 }
 
 configure_ssh () {
-  echo "  -> mkdir --parents /home/storage/.ssh"
-  mkdir --parents /home/storage/.ssh
+  echo "  -> mkdir --parents /home/$STORUSER/.ssh"
+  mkdir --parents /home/$STORUSER/.ssh
   
-  echo "  -> touch /home/storage/.ssh/authorized_keys"
-  touch /home/storage/.ssh/authorized_keys
+  echo "  -> touch /home/$STORUSER/.ssh/authorized_keys"
+  touch /home/$STORUSER/.ssh/authorized_keys
 
-  echo "  -> chmod 700 /home/storage/.ssh"
-  chmod 700 /home/storage/.ssh
+  echo "  -> chmod 700 /home/$STORUSER/.ssh"
+  chmod 700 /home/$STORUSER/.ssh
   
-  echo "  -> chmod 600 /home/storage/.ssh/authorized_keys"
-  chmod 600 /home/storage/.ssh/authorized_keys
+  echo "  -> chmod 600 /home/$STORUSER/.ssh/authorized_keys"
+  chmod 600 /home/$STORUSER/.ssh/authorized_keys
 
-  # Disable the password for the "storage" user to force authentication using a key
+  # Disable the password for the storage user to force authentication using a key
   CONFIG_CHECK=`grep "^# SparkleShare$" /etc/ssh/sshd_config`
   if ! [ "$CONFIG_CHECK" = "# SparkleShare" ]; then
     echo "" >> /etc/ssh/sshd_config
     echo "# SparkleShare" >> /etc/ssh/sshd_config
     echo "# Please do not edit the above comment as it's used as a check by Dazzle" >> /etc/ssh/sshd_config
-    echo "Match User storage" >> /etc/ssh/sshd_config
+    echo "Match User $STORUSER" >> /etc/ssh/sshd_config
     echo "    PasswordAuthentication no" >> /etc/ssh/sshd_config
     echo "    PubkeyAuthentication yes" >> /etc/ssh/sshd_config
   fi
@@ -139,35 +141,35 @@ install_git () {
 }
 
 create_project () {
-  if [ -f "/home/storage/$1/HEAD" ]; then
+  if [ -f "/home/$STORUSER/$1/HEAD" ]; then
     echo "  -> Project \"$1\" already exists."
     echo
   else
     # Create the Git repository
-    echo "  -> $GIT init --bare /home/storage/$1"
-    $GIT init --quiet --bare /home/storage/$1
+    echo "  -> $GIT init --bare /home/$STORUSER/$1"
+    $GIT init --quiet --bare /home/$STORUSER/$1
 
     # Don't allow force-pushing and data to get lost
-    echo "  -> $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true"
-    $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true
+    echo "  -> $GIT config --file /home/$STORUSER/$1/config receive.denyNonFastForwards true"
+    $GIT config --file /home/$STORUSER/$1/config receive.denyNonFastForwards true
 
     # Add list of files that Git should not compress    
     EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak iso"
     for EXTENSION in $EXTENSIONS; do
       sleep 0.05
-      echo -ne "  -> echo \"*.$EXTENSION -delta\" >> /home/storage/$1/info/attributes      \r"
-      echo "*.$EXTENSION -delta" >> /home/storage/$1/info/attributes
+      echo -ne "  -> echo \"*.$EXTENSION -delta\" >> /home/$STORUSER/$1/info/attributes      \r"
+      echo "*.$EXTENSION -delta" >> /home/$STORUSER/$1/info/attributes
       sleep 0.05
       EXTENSION_UPPERCASE=`echo $EXTENSION | tr '[:lower:]' '[:upper:]'`
-      echo -ne "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> /home/storage/$1/info/attributes      \r"
-      echo "*.$EXTENSION_UPPERCASE -delta" >> /home/storage/$1/info/attributes
+      echo -ne "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> /home/$STORUSER/$1/info/attributes      \r"
+      echo "*.$EXTENSION_UPPERCASE -delta" >> /home/$STORUSER/$1/info/attributes
     done
     
     echo ""
             
     # Set the right permissions
-    echo "  -> chown --recursive storage:storage /home/storage"
-    chown --recursive storage:storage /home/storage
+    echo "  -> chown --recursive $STORUSER:$STORUSER /home/$STORUSER"
+    chown --recursive $STORUSER:$STORUSER /home/$STORUSER
 
     sleep 0.5
 
@@ -183,8 +185,8 @@ create_project () {
   echo "To link up a SparkleShare client, enter the following"
   echo "details into the ${BOLD}\"Add Hosted Project...\"${NORMAL} dialog: "
   echo 
-  echo "      Address: ${BOLD}ssh://storage@$IP:$PORT${NORMAL}"
-  echo "  Remote Path: ${BOLD}/home/storage/$1${NORMAL}"
+  echo "      Address: ${BOLD}ssh://$STORUSER@$IP:$PORT${NORMAL}"
+  echo "  Remote Path: ${BOLD}/home/$STORUSER/$1${NORMAL}"
   echo
   echo "To link up (more) computers, use the \"dazzle link\" command."
   echo
@@ -199,7 +201,7 @@ link_client () {
   read LINK_CODE
   
   if [ ${#SHELL} > 256 ]; then
-    echo $LINK_CODE >> /home/storage/.ssh/authorized_keys
+    echo $LINK_CODE >> /home/$STORUSER/.ssh/authorized_keys
     echo
     echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
     echo "Repeat this step to link more clients."
@@ -216,9 +218,9 @@ case $1 in
   setup)
     echo "${BOLD} 1/4 | Installing the Git package...${NORMAL}"
     install_git
-    echo "${BOLD} 2/4 | Creating account \"storage\"...${NORMAL}"
+    echo "${BOLD} 2/4 | Creating account \"$STORUSER\"...${NORMAL}"
     create_account
-    echo "${BOLD} 3/4 | Configuring account \"storage\"...${NORMAL}"
+    echo "${BOLD} 3/4 | Configuring account \"$STORUSER\"...${NORMAL}"
     configure_ssh
     echo "${BOLD} 4/4 | Reloading the SSH config...${NORMAL}"
     reload_ssh_config
