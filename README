@@ -4,17 +4,34 @@ An easier and less error prone way to set up a SparkleShare host.
 Created to work on Debian and Red Hat based systems.
 
 
+## Usage
+
 Usage (as root):
 
-  # Get Dazzle
-  curl https://raw.github.com/hbons/Dazzle/master/dazzle.sh --output /usr/bin/dazzle
-  chmod +x /usr/bin/dazzle
-  
-  # Initial Dazzle setup
-  dazzle setup
+    # Get Dazzle
+    curl https://raw.github.com/hbons/Dazzle/master/dazzle.sh --output /usr/bin/dazzle
+    chmod +x /usr/bin/dazzle
 
-  # Link a SparkleShare client
-  dazzle link
+    # Initial Dazzle setup
+    dazzle setup
 
-  # Create a new project
-  dazzle create PROJECT_NAME
+    # Link a SparkleShare client
+    dazzle link
+
+    # Create a new project
+    dazzle create PROJECT_NAME
+
+
+## Configuration
+
+You can control almost all configuration options via environment variables:
+
+    export DAZZLE_USER=dazzle
+    export DAZZLE_ROOT=/var/lib/dazzle
+    dazzle setup
+
+Available options are the following:
+
+* DAZZLE_USER: the Dazzle user. Defaults to "storage".
+* DAZZLE_GROUP: the Dazzle group. Defaults to "storage".
+* DAZZLE_HOME: the directory used to store projects. Defaults to "/home/storage".

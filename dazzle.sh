@@ -18,20 +18,24 @@ if [[ $UID -ne 0 ]]; then
       ;;
   esac
 fi
-  
+
 GIT=`which git`
-  
+
 # Define text styles
 BOLD=`tput bold`
 NORMAL=`tput sgr0`
 
+# Nice defaults
+DAZZLE_USER="${DAZZLE_USER:-storage}"
+DAZZLE_GROUP="${DAZZLE_GROUP:-$DAZZLE_USER}"
+DAZZLE_HOME="${DAZZLE_HOME:-/home/$DAZZLE_USER}"
 
 show_help () {
     echo "${BOLD}Dazzle, SparkleShare host setup script${NORMAL}"
     echo "This script needs to be run as root"
     echo
     echo "Usage: dazzle [COMMAND]"
-    echo 
+    echo
     echo "  setup                            configures this machine to serve as a SparkleShare host"
     echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
     echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
@@ -40,39 +44,46 @@ show_help () {
 }
 
 create_account () {
-  STORAGE=`grep "^storage:" /etc/passwd | cut --bytes=-7`
-  
-  if [ "$STORAGE" = "storage" ]; then
+  STORAGE=`grep "^$DAZZLE_USER:" /etc/passwd | cut --bytes=-7`
+
+  # Create user
+  if [ "$STORAGE" = "$DAZZLE_USER" ]; then
     echo "  -> Account already exists."
   else
-    STORAGE=`grep "^storage:" /etc/group | cut --bytes=-7`
+    STORAGE=`grep "^$DAZZLE_GROUP:" /etc/group | cut --bytes=-7`
     GIT_SHELL=`which git-shell`
-    
-    if [ "$STORAGE" = "storage" ]; then
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --gid storage"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --gid storage
+
+    if [ "$STORAGE" = "$DAZZLE_GROUP" ]; then
+      echo "  -> useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password \"*\" --gid $DAZZLE_GROUP"
+      useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password "*" --gid $DAZZLE_GROUP
 
     else
-      echo "  -> useradd storage --create-home --shell $GIT_SHELL --password \"*\" --user-group"
-      useradd storage --create-home --shell $GIT_SHELL --password "*" --user-group
+      echo "  -> useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password \"*\" --user-group"
+      useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password "*" --user-group
     fi
   fi
-  
+
+  # Create base directory
+  if [ ! -d $DAZZLE_HOME ]; then
+    echo "  -> mkdir --parents $DAZZLE_HOME"
+    mkdir --parents $DAZZLE_HOME
+  fi
+
   sleep 0.5
 }
 
 configure_ssh () {
-  echo "  -> mkdir --parents /home/storage/.ssh"
-  mkdir --parents /home/storage/.ssh
-  
-  echo "  -> touch /home/storage/.ssh/authorized_keys"
-  touch /home/storage/.ssh/authorized_keys
+  echo "  -> mkdir --parents /home/$DAZZLE_USER/.ssh"
+  mkdir --parents /home/$DAZZLE_USER/.ssh
 
-  echo "  -> chmod 700 /home/storage/.ssh"
-  chmod 700 /home/storage/.ssh
-  
-  echo "  -> chmod 600 /home/storage/.ssh/authorized_keys"
-  chmod 600 /home/storage/.ssh/authorized_keys
+  echo "  -> touch /home/$DAZZLE_USER/.ssh/authorized_keys"
+  touch /home/$DAZZLE_USER/.ssh/authorized_keys
+
+  echo "  -> chmod 700 /home/$DAZZLE_USER/.ssh"
+  chmod 700 /home/$DAZZLE_USER/.ssh
+
+  echo "  -> chmod 600 /home/$DAZZLE_USER/.ssh/authorized_keys"
+  chmod 600 /home/$DAZZLE_USER/.ssh/authorized_keys
 
   # Disable the password for the "storage" user to force authentication using a key
   CONFIG_CHECK=`grep "^# SparkleShare$" /etc/ssh/sshd_config`
@@ -80,11 +91,11 @@ configure_ssh () {
     echo "" >> /etc/ssh/sshd_config
     echo "# SparkleShare" >> /etc/ssh/sshd_config
     echo "# Please do not edit the above comment as it's used as a check by Dazzle" >> /etc/ssh/sshd_config
-    echo "Match User storage" >> /etc/ssh/sshd_config
+    echo "Match User $DAZZLE_USER" >> /etc/ssh/sshd_config
     echo "    PasswordAuthentication no" >> /etc/ssh/sshd_config
     echo "    PubkeyAuthentication yes" >> /etc/ssh/sshd_config
   fi
-  
+
   sleep 0.5
 }
 
@@ -116,7 +127,7 @@ install_git () {
     elif [ -f "/usr/bin/apt-get" ]; then
       echo "  -> apt-get --yes install git"
       apt-get --yes --quiet install git
-      
+
       if [ $? -ne 0 ]; then
         echo "  -> apt-get --yes install git-core"
         apt-get --yes --quiet install git-core
@@ -139,39 +150,39 @@ install_git () {
 }
 
 create_project () {
-  if [ -f "/home/storage/$1/HEAD" ]; then
+  if [ -f "$DAZZLE_HOME/$1/HEAD" ]; then
     echo "  -> Project \"$1\" already exists."
     echo
   else
     # Create the Git repository
-    echo "  -> $GIT init --bare /home/storage/$1"
-    $GIT init --quiet --bare /home/storage/$1
+    echo "  -> $GIT init --bare $DAZZLE_HOME/$1"
+    $GIT init --quiet --bare $DAZZLE_HOME/$1
 
     # Don't allow force-pushing and data to get lost
-    echo "  -> $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true"
-    $GIT config --file /home/storage/$1/config receive.denyNonFastForwards true
+    echo "  -> $GIT config --file $DAZZLE_HOME/$1/config receive.denyNonFastForwards true"
+    $GIT config --file $DAZZLE_HOME/$1/config receive.denyNonFastForwards true
 
-    # Add list of files that Git should not compress    
+    # Add list of files that Git should not compress
     EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak iso"
     for EXTENSION in $EXTENSIONS; do
       sleep 0.05
-      echo -ne "  -> echo \"*.$EXTENSION -delta\" >> /home/storage/$1/info/attributes      \r"
-      echo "*.$EXTENSION -delta" >> /home/storage/$1/info/attributes
+      echo -ne "  -> echo \"*.$EXTENSION -delta\" >> $DAZZLE_HOME/$1/info/attributes      \r"
+      echo "*.$EXTENSION -delta" >> $DAZZLE_HOME/$1/info/attributes
       sleep 0.05
       EXTENSION_UPPERCASE=`echo $EXTENSION | tr '[:lower:]' '[:upper:]'`
-      echo -ne "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> /home/storage/$1/info/attributes      \r"
-      echo "*.$EXTENSION_UPPERCASE -delta" >> /home/storage/$1/info/attributes
+      echo -ne "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> $DAZZLE_HOME/$1/info/attributes      \r"
+      echo "*.$EXTENSION_UPPERCASE -delta" >> $DAZZLE_HOME/$1/info/attributes
     done
-    
+
     echo ""
-            
+
     # Set the right permissions
-    echo "  -> chown --recursive storage:storage /home/storage"
-    chown --recursive storage:storage /home/storage
+    echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
+    chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME
 
     sleep 0.5
 
-    echo 
+    echo
     echo "${BOLD}Project \"$1\" was successfully created.${NORMAL}"
   fi
 
@@ -182,9 +193,9 @@ create_project () {
   # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
   echo "details into the ${BOLD}\"Add Hosted Project...\"${NORMAL} dialog: "
-  echo 
-  echo "      Address: ${BOLD}ssh://storage@$IP:$PORT${NORMAL}"
-  echo "  Remote Path: ${BOLD}/home/storage/$1${NORMAL}"
+  echo
+  echo "      Address: ${BOLD}ssh://$DAZZLE_USER@$IP:$PORT${NORMAL}"
+  echo "  Remote Path: ${BOLD}$DAZZLE_HOME/$1${NORMAL}"
   echo
   echo "To link up (more) computers, use the \"dazzle link\" command."
   echo
@@ -194,12 +205,12 @@ link_client () {
   # Ask the user for the link code with a prompt
   echo "Paste the contents of ${BOLD}\"~/SparkleShare/Your Name's link code.txt\"${NORMAL}"
   echo "(found on the client) into the field below and press ${BOLD}<ENTER>${NORMAL}."
-  echo 
+  echo
   echo -n " ${BOLD}Link code: ${NORMAL}"
   read LINK_CODE
-  
+
   if [ ${#SHELL} > 256 ]; then
-    echo $LINK_CODE >> /home/storage/.ssh/authorized_keys
+    echo $LINK_CODE >> /home/$DAZZLE_USER/.ssh/authorized_keys
     echo
     echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
     echo "Repeat this step to link more clients."
@@ -216,9 +227,9 @@ case $1 in
   setup)
     echo "${BOLD} 1/4 | Installing the Git package...${NORMAL}"
     install_git
-    echo "${BOLD} 2/4 | Creating account \"storage\"...${NORMAL}"
+    echo "${BOLD} 2/4 | Creating account \"$DAZZLE_USER\"...${NORMAL}"
     create_account
-    echo "${BOLD} 3/4 | Configuring account \"storage\"...${NORMAL}"
+    echo "${BOLD} 3/4 | Configuring account \"$DAZZLE_USER\"...${NORMAL}"
     configure_ssh
     echo "${BOLD} 4/4 | Reloading the SSH config...${NORMAL}"
     reload_ssh_config
@@ -228,7 +239,7 @@ case $1 in
     echo
     ;;
 
-  create)    
+  create)
     echo "${BOLD}Creating project \"$2\"...${NORMAL}"
     create_project $2
     ;;
