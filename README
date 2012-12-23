@@ -27,8 +27,8 @@ Usage (as root):
 You can control almost all configuration options via environment variables:
 
     export DAZZLE_USER=dazzle
-    export DAZZLE_ROOT=/var/lib/dazzle
-    dazzle setup
+    export DAZZLE_HOME=/var/lib/stuff
+    sudo dazzle setup
 
 Available options are the following:
 
