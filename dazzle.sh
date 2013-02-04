@@ -54,12 +54,12 @@ create_account () {
     GIT_SHELL=`which git-shell`
 
     if [ "$STORAGE" = "$DAZZLE_GROUP" ]; then
-      echo "  -> useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password \"*\" --gid $DAZZLE_GROUP"
-      useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password "*" --gid $DAZZLE_GROUP
+      echo "  -> useradd $DAZZLE_USER --create-home --home $DAZZLE_HOME --system --shell $GIT_SHELL --password \"*\" --gid $DAZZLE_GROUP"
+      useradd $DAZZLE_USER --create-home --home $DAZZLE_HOME --system --shell $GIT_SHELL --password "*" --gid $DAZZLE_GROUP
 
     else
-      echo "  -> useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password \"*\" --user-group"
-      useradd $DAZZLE_USER --create-home --shell $GIT_SHELL --password "*" --user-group
+      echo "  -> useradd $DAZZLE_USER --create-home --home $DAZZLE_HOME --system --shell $GIT_SHELL --password \"*\" --user-group"
+      useradd $DAZZLE_USER --create-home --home $DAZZLE_HOME --system --shell $GIT_SHELL --password "*" --user-group
     fi
   fi
 
@@ -73,17 +73,17 @@ create_account () {
 }
 
 configure_ssh () {
-  echo "  -> mkdir --parents /home/$DAZZLE_USER/.ssh"
-  mkdir --parents /home/$DAZZLE_USER/.ssh
+  echo "  -> mkdir --parents $DAZZLE_HOME/.ssh"
+  mkdir --parents $DAZZLE_HOME/.ssh
 
-  echo "  -> touch /home/$DAZZLE_USER/.ssh/authorized_keys"
-  touch /home/$DAZZLE_USER/.ssh/authorized_keys
+  echo "  -> touch $DAZZLE_HOME/.ssh/authorized_keys"
+  touch $DAZZLE_HOME/.ssh/authorized_keys
 
-  echo "  -> chmod 700 /home/$DAZZLE_USER/.ssh"
-  chmod 700 /home/$DAZZLE_USER/.ssh
+  echo "  -> chmod 700 $DAZZLE_HOME/.ssh"
+  chmod 700 $DAZZLE_HOME/.ssh
 
-  echo "  -> chmod 600 /home/$DAZZLE_USER/.ssh/authorized_keys"
-  chmod 600 /home/$DAZZLE_USER/.ssh/authorized_keys
+  echo "  -> chmod 600 $DAZZLE_HOME/.ssh/authorized_keys"
+  chmod 600 $DAZZLE_HOME/.ssh/authorized_keys
 
   # Disable the password for the "storage" user to force authentication using a key
   CONFIG_CHECK=`grep "^# SparkleShare$" /etc/ssh/sshd_config`
@@ -210,7 +210,7 @@ link_client () {
   read LINK_CODE
 
   if [ ${#SHELL} > 256 ]; then
-    echo $LINK_CODE >> /home/$DAZZLE_USER/.ssh/authorized_keys
+    echo $LINK_CODE >> $DAZZLE_HOME/.ssh/authorized_keys
     echo
     echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
     echo "Repeat this step to link more clients."
