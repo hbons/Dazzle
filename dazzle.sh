@@ -64,9 +64,9 @@ create_account () {
   fi
 
   # Create base directory
-  if [ ! -d $DAZZLE_HOME ]; then
+  if [ ! -d "$DAZZLE_HOME" ]; then
     echo "  -> mkdir --parents $DAZZLE_HOME"
-    mkdir --parents $DAZZLE_HOME
+    mkdir --parents "$DAZZLE_HOME"
   fi
 
   sleep 0.5
@@ -156,29 +156,29 @@ create_project () {
   else
     # Create the Git repository
     echo "  -> $GIT init --bare $DAZZLE_HOME/$1"
-    $GIT init --quiet --bare $DAZZLE_HOME/$1
+    $GIT init --quiet --bare "$DAZZLE_HOME/$1"
 
     # Don't allow force-pushing and data to get lost
     echo "  -> $GIT config --file $DAZZLE_HOME/$1/config receive.denyNonFastForwards true"
-    $GIT config --file $DAZZLE_HOME/$1/config receive.denyNonFastForwards true
+    $GIT config --file "$DAZZLE_HOME/$1/config" receive.denyNonFastForwards true
 
     # Add list of files that Git should not compress
     EXTENSIONS="jpg jpeg png tiff gif flac mp3 ogg oga avi mov mpg mpeg mkv ogv ogx webm zip gz bz bz2 rpm deb tgz rar ace 7z pak iso"
     for EXTENSION in $EXTENSIONS; do
       sleep 0.05
       echo -ne "  -> echo \"*.$EXTENSION -delta\" >> $DAZZLE_HOME/$1/info/attributes      \r"
-      echo "*.$EXTENSION -delta" >> $DAZZLE_HOME/$1/info/attributes
+      echo "*.$EXTENSION -delta" >> "$DAZZLE_HOME/$1/info/attributes"
       sleep 0.05
       EXTENSION_UPPERCASE=`echo $EXTENSION | tr '[:lower:]' '[:upper:]'`
       echo -ne "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> $DAZZLE_HOME/$1/info/attributes      \r"
-      echo "*.$EXTENSION_UPPERCASE -delta" >> $DAZZLE_HOME/$1/info/attributes
+      echo "*.$EXTENSION_UPPERCASE -delta" >> "$DAZZLE_HOME/$1/info/attributes"
     done
 
     echo ""
 
     # Set the right permissions
     echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
-    chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME
+    chown --recursive $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME"
 
     sleep 0.5
 
@@ -241,12 +241,12 @@ case $1 in
 
   create)
     echo "${BOLD}Creating project \"$2\"...${NORMAL}"
-    create_project $2
+    create_project "$2"
     ;;
 
   create-encrypted)
     echo "${BOLD}Creating encrypted project \"$2\"...${NORMAL}"
-    create_project $2-crypto
+    create_project "$2-crypto"
     ;;
 
   link)
