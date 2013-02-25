@@ -44,13 +44,13 @@ show_help () {
 }
 
 create_account () {
-  STORAGE=`grep "^$DAZZLE_USER:" /etc/passwd | cut --bytes=-7`
+  STORAGE=`grep "^$DAZZLE_USER:" /etc/passwd | cut --delimiter=: --fields=1`
 
   # Create user
   if [ "$STORAGE" = "$DAZZLE_USER" ]; then
     echo "  -> Account already exists."
   else
-    STORAGE=`grep "^$DAZZLE_GROUP:" /etc/group | cut --bytes=-7`
+    STORAGE=`grep "^$DAZZLE_GROUP:" /etc/group | cut --delimiter=: --fields=1`
     GIT_SHELL=`which git-shell`
 
     if [ "$STORAGE" = "$DAZZLE_GROUP" ]; then
