@@ -209,16 +209,11 @@ link_client () {
   echo -n " ${BOLD}Link code: ${NORMAL}"
   read LINK_CODE
 
-  if [ "$LINK_CODE" -lt 256 ]; then
-    echo $LINK_CODE >> $DAZZLE_HOME/.ssh/authorized_keys
-    echo
-    echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
-    echo "Repeat this step to link more clients."
-    echo
-
-  else
-    echo "${BOLD}Not a valid link code...${NORMAL}"
-  fi
+  echo $LINK_CODE >> $DAZZLE_HOME/.ssh/authorized_keys
+  echo
+  echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
+  echo "Repeat this step to link more clients."
+  echo
 }
 
 
