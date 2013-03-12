@@ -180,6 +180,9 @@ create_project () {
     echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
     chown --recursive $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME"
 
+    echo "  -> chmod --recursive o-rwx $DAZZLE_HOME/$1"
+    chmod --recursive o-rwx "$DAZZLE_HOME"/"$1"
+
     sleep 0.5
 
     echo
