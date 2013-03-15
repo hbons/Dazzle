@@ -94,6 +94,8 @@ configure_ssh () {
     echo "Match User $DAZZLE_USER" >> /etc/ssh/sshd_config
     echo "    PasswordAuthentication no" >> /etc/ssh/sshd_config
     echo "    PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+    echo "    AuthorizedKeysFile $DAZZLE_HOME/.ssh/authorized_keys" >> /etc/ssh/sshd_config
+    echo "# End of SparkleShare configuration" >> /etc/ssh/sshd_config
   fi
 
   sleep 0.5
