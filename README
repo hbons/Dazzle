@@ -9,10 +9,11 @@ Created to work on Debian and Red Hat based systems.
 Usage (as root):
 
     # Get Dazzle
-    curl https://raw.github.com/hbons/Dazzle/master/dazzle.sh --output /usr/bin/dazzle
-    chmod +x /usr/bin/dazzle
-
+    curl https://raw.github.com/hbons/Dazzle/master/dazzle.sh \
+        --output /usr/bin/dazzle
+    
     # Initial Dazzle setup
+    chmod +x /usr/bin/dazzle
     dazzle setup
 
     # Link a SparkleShare client
