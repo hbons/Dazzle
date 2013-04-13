@@ -178,11 +178,11 @@ create_project () {
     echo ""
 
     # Set the right permissions
-    echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
-    chown --recursive $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME"
+    echo "  -> chown -R $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
+    chown -R $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME"
 
-    echo "  -> chmod --recursive o-rwx $DAZZLE_HOME/$1"
-    chmod --recursive o-rwx "$DAZZLE_HOME"/"$1"
+    echo "  -> chmod -R o-rwx $DAZZLE_HOME/$1"
+    chmod -R o-rwx "$DAZZLE_HOME"/"$1"
 
     sleep 0.5
 
