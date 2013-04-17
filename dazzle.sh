@@ -239,8 +239,13 @@ case $1 in
     ;;
 
   create)
-    echo "${BOLD}Creating project \"$2\"...${NORMAL}"
-    create_project "$2"
+    if [ -n "$2" ]; then
+      echo "${BOLD}Creating project \"$2\"...${NORMAL}"
+      create_project "$2"
+
+    else
+      echo "Please provide a project name."
+    fi
     ;;
 
   create-encrypted)
