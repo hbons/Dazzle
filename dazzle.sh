@@ -142,6 +142,10 @@ install_git () {
       echo "  -> emerge dev-vcs/git"
       emerge --quiet dev-vcs/git
 
+    elif [ -f "/usr/bin/pacman" ]; then
+      echo "  -> pacman -S git"
+      pacman -S git
+
     else
       echo "${BOLD}Could not install Git... Please install it manually before continuing.{$NORMAL}"
       echo
