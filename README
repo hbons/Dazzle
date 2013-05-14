@@ -10,7 +10,7 @@ Usage (as root):
 
     # Get Dazzle
     curl https://raw.github.com/hbons/Dazzle/master/dazzle.sh \
-        --output /usr/bin/dazzle
+        --output /usr/local/bin/dazzle
     
     # Initial Dazzle setup
     chmod +x /usr/bin/dazzle
