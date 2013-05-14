@@ -19,7 +19,7 @@ if [[ $UID -ne 0 ]]; then
   esac
 fi
 
-GIT=`which git`
+GIT=`which git` > /dev/null
 
 # Define text styles
 BOLD=`tput bold`
