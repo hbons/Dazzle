@@ -123,7 +123,7 @@ install_git () {
   else
     if [ -f "/usr/bin/yum" ]; then
       echo "  -> yum --assumeyes install git"
-      yum --assumeyes --quiet install git
+      yum -y --quiet install git
 
     elif [ -f "/usr/bin/apt-get" ]; then
       echo "  -> apt-get --yes install git"

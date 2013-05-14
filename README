@@ -13,7 +13,7 @@ Usage (as root):
         --output /usr/local/bin/dazzle
     
     # Initial Dazzle setup
-    chmod +x /usr/bin/dazzle
+    chmod +x /usr/local/bin/dazzle
     dazzle setup
 
     # Link a SparkleShare client
