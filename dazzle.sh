@@ -65,7 +65,7 @@ create_account () {
 
   # Create base directory
   if [ ! -d "$DAZZLE_HOME" ]; then
-    echo "  -> mkdir -p $DAZZLE_HOME"
+    echo "  -> mkdir --parents $DAZZLE_HOME"
     mkdir -p "$DAZZLE_HOME"
   fi
 
@@ -73,7 +73,7 @@ create_account () {
 }
 
 configure_ssh () {
-  echo "  -> mkdir -p $DAZZLE_HOME/.ssh"
+  echo "  -> mkdir --parents $DAZZLE_HOME/.ssh"
   mkdir -p $DAZZLE_HOME/.ssh
 
   echo "  -> touch $DAZZLE_HOME/.ssh/authorized_keys"
@@ -178,10 +178,10 @@ create_project () {
     echo ""
 
     # Set the right permissions
-    echo "  -> chown -R $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
+    echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
     chown -R $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME"
 
-    echo "  -> chmod -R o-rwx $DAZZLE_HOME/$1"
+    echo "  -> chmod --recursive o-rwx $DAZZLE_HOME/$1"
     chmod -R o-rwx "$DAZZLE_HOME"/"$1"
 
     sleep 0.5
