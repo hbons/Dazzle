@@ -211,16 +211,15 @@ create_project () {
 
 link_client () {
   # Ask the user for the link code with a prompt
-  echo "Paste the contents of ${BOLD}\"~/SparkleShare/Your Name's link code.txt\"${NORMAL}"
-  echo "(found on the client) into the field below and press ${BOLD}<ENTER>${NORMAL}."
+  echo "Paste your Client ID (found in the status icon menu) below and press ${BOLD}<ENTER>${NORMAL}."
   echo
-  echo -n " ${BOLD}Link code: ${NORMAL}"
+  echo -n " ${BOLD}Client ID: ${NORMAL}"
   read LINK_CODE
 
   echo $LINK_CODE >> $DAZZLE_HOME/.ssh/authorized_keys
   echo
-  echo "${BOLD}The client with this link code can now access projects.${NORMAL}"
-  echo "Repeat this step to link more clients."
+  echo "${BOLD}The client with this ID can now access projects.${NORMAL}"
+  echo "Repeat this step to give access to more clients."
   echo
 }
 
