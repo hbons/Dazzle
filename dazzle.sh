@@ -44,13 +44,13 @@ show_help () {
 }
 
 create_account () {
-  STORAGE=`grep "^$DAZZLE_USER:" /etc/passwd | cut --delimiter=: --fields=1`
+  STORAGE=`grep "^$DAZZLE_USER:" /etc/passwd | cut -d : -f 1`
 
   # Create user
   if [ "$STORAGE" = "$DAZZLE_USER" ]; then
     echo "  -> Account already exists."
   else
-    STORAGE=`grep "^$DAZZLE_GROUP:" /etc/group | cut --delimiter=: --fields=1`
+    STORAGE=`grep "^$DAZZLE_GROUP:" /etc/group | cut -d : -f 1`
     GIT_SHELL=`which git-shell`
 
     if [ "$STORAGE" = "$DAZZLE_GROUP" ]; then
@@ -66,7 +66,7 @@ create_account () {
   # Create base directory
   if [ ! -d "$DAZZLE_HOME" ]; then
     echo "  -> mkdir --parents $DAZZLE_HOME"
-    mkdir --parents "$DAZZLE_HOME"
+    mkdir -p "$DAZZLE_HOME"
   fi
 
   sleep 0.5
@@ -74,7 +74,7 @@ create_account () {
 
 configure_ssh () {
   echo "  -> mkdir --parents $DAZZLE_HOME/.ssh"
-  mkdir --parents $DAZZLE_HOME/.ssh
+  mkdir -p $DAZZLE_HOME/.ssh
 
   echo "  -> touch $DAZZLE_HOME/.ssh/authorized_keys"
   touch $DAZZLE_HOME/.ssh/authorized_keys
@@ -117,7 +117,7 @@ reload_ssh_config () {
 
 install_git () {
   if [ -n "$GIT" ]; then
-    GIT_VERSION=`$GIT --version | cut --bytes=13-`
+    GIT_VERSION=`$GIT --version | cut -b 13-`
     echo "  -> The Git package has already been installed (version $GIT_VERSION)."
 
   else
@@ -182,11 +182,11 @@ create_project () {
     echo ""
 
     # Set the right permissions
-    echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME/"
-    chown --recursive $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME/"
+    echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
+    chown -R $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME"
 
     echo "  -> chmod --recursive o-rwx $DAZZLE_HOME/$1"
-    chmod --recursive o-rwx "$DAZZLE_HOME"/"$1"
+    chmod -R o-rwx "$DAZZLE_HOME"/"$1"
 
     sleep 0.5
 
@@ -196,7 +196,7 @@ create_project () {
 
   # Fetch the external IP address
   IP=`curl --silent http://ifconfig.me/ip`
-  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut --bytes=6-`
+  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut -b 6-`
 
   # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
@@ -264,4 +264,3 @@ case $1 in
     show_help
     ;;
 esac
-
