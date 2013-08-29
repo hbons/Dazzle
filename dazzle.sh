@@ -95,6 +95,10 @@ configure_ssh () {
     echo "    PasswordAuthentication no" >> /etc/ssh/sshd_config
     echo "    PubkeyAuthentication yes" >> /etc/ssh/sshd_config
     echo "# End of SparkleShare configuration" >> /etc/ssh/sshd_config
+  # If SparkleShare section already exist, we just update user list
+  else
+    sed -ri "N;N;N;s/(# SparkleShare\n)(#.*\n)(Match User .*)\n/\1\2\3,$DAZZLE_USER\n/" /etc/ssh/sshd_config
+
   fi
 
   sleep 0.5
