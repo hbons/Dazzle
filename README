@@ -9,7 +9,7 @@ Created to work on Debian and Red Hat based systems.
 Usage (as root):
 
     # Get Dazzle
-    curl https://raw.github.com/hbons/Dazzle/master/dazzle.sh \
+    curl https://raw.githubusercontent.com/hbons/Dazzle/master/dazzle.sh \
         --output /usr/local/bin/dazzle
     
     # Initial Dazzle setup
