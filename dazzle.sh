@@ -195,7 +195,11 @@ create_project () {
   fi
 
   # Fetch the external IP address
-  IP=`curl --silent http://ifconfig.me/ip`
+  # 1. fetch all inet addresses (IPv4)
+  # 2. select only global scope addresses
+  # 3. extract the address
+  # 4. limit the list to the first address to get only one IP in case the server has more than one
+  IP=`ip -f inet addr |grep "inet .* scope global" | grep -Po "inet ([\d+\.]+)" | cut -c 6- | head -n1`
   PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut -b 6-`
 
   # Display info to link with the created project to the user
