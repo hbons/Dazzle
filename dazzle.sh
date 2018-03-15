@@ -6,6 +6,13 @@
 # To Public License, Version 2, as published by Sam Hocevar. See
 # http://sam.zoy.org/wtfpl/COPYING for more details.
 
+#added to enable external user definition
+case $2 in
+        u|--user)
+        MYUSER=$3
+        ;;
+esac
+
 
 # Check if we're root, if not show a warning
 if [[ $UID -ne 0 ]]; then
@@ -26,7 +33,7 @@ BOLD=`tput bold`
 NORMAL=`tput sgr0`
 
 # Nice defaults
-DAZZLE_USER="${DAZZLE_USER:-storage}"
+DAZZLE_USER="${DAZZLE_USER:-$MYUSER}"
 DAZZLE_GROUP="${DAZZLE_GROUP:-$DAZZLE_USER}"
 DAZZLE_HOME="${DAZZLE_HOME:-/home/$DAZZLE_USER}"
 
