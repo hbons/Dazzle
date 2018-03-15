@@ -8,11 +8,16 @@
 
 #added to enable external user definition
 case $2 in
-        u|--user)
+        -u|--user)
         MYUSER=$3
         ;;
 esac
 
+case $3 in #added to catch the user name for the create sub-command
+      -u|--user)
+        MYUSER=$4
+        ;;
+esac
 
 # Check if we're root, if not show a warning
 if [[ $UID -ne 0 ]]; then
@@ -42,11 +47,12 @@ show_help () {
     echo "This script needs to be run as root"
     echo
     echo "Usage: dazzle [COMMAND]"
-    echo
+    echo " 
     echo "  setup                            configures this machine to serve as a SparkleShare host"
     echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
     echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
     echo "  link                             links a SparkleShare client to this host by entering a link code"
+    echo "  -u|--user USERNAME               MUST specify a username at the end of the command"
     echo
 }
 
