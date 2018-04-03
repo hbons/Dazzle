@@ -31,11 +31,11 @@ if [[ $UID -ne 0 ]]; then
   esac
 fi
 
-GIT=`which git` > /dev/null
+GIT=$( which git ) > /dev/null
 
 # Define text styles
-BOLD=`tput bold`
-NORMAL=`tput sgr0`
+BOLD=$( tput bold )
+NORMAL=$( tput sgr0 )
 
 # Nice defaults
 DAZZLE_USER="${DAZZLE_USER:-$MYUSER}"
@@ -47,7 +47,7 @@ show_help () {
     echo "This script needs to be run as root"
     echo
     echo "Usage: dazzle [COMMAND]"
-    echo " 
+    echo
     echo "  setup                            configures this machine to serve as a SparkleShare host"
     echo "  create PROJECT_NAME              creates a SparkleShare project called PROJECT_NAME"
     echo "  create-encrypted PROJECT_NAME    creates an encrypted SparkleShare project"
@@ -57,14 +57,14 @@ show_help () {
 }
 
 create_account () {
-  STORAGE=`grep "^$DAZZLE_USER:" /etc/passwd | cut -d : -f 1`
+  STORAGE=$( grep "^$DAZZLE_USER:" /etc/passwd | cut -d : -f 1 )
 
   # Create user
   if [ "$STORAGE" = "$DAZZLE_USER" ]; then
     echo "  -> Account already exists."
   else
-    STORAGE=`grep "^$DAZZLE_GROUP:" /etc/group | cut -d : -f 1`
-    GIT_SHELL=`which git-shell`
+    STORAGE=$( grep "^$DAZZLE_GROUP:" /etc/group | cut -d : -f 1 )
+    GIT_SHELL=$( which git-shell )
 
     if [ "$STORAGE" = "$DAZZLE_GROUP" ]; then
       echo "  -> useradd $DAZZLE_USER --create-home --home $DAZZLE_HOME --system --shell $GIT_SHELL --password \"*\" --gid $DAZZLE_GROUP"
@@ -87,27 +87,29 @@ create_account () {
 
 configure_ssh () {
   echo "  -> mkdir --parents $DAZZLE_HOME/.ssh"
-  mkdir -p $DAZZLE_HOME/.ssh
+  mkdir -p "$DAZZLE_HOME/.ssh"
 
   echo "  -> touch $DAZZLE_HOME/.ssh/authorized_keys"
-  touch $DAZZLE_HOME/.ssh/authorized_keys
+  touch "$DAZZLE_HOME/.ssh/authorized_keys"
 
   echo "  -> chmod 700 $DAZZLE_HOME/.ssh"
-  chmod 700 $DAZZLE_HOME/.ssh
+  chmod 700 "$DAZZLE_HOME/.ssh"
 
   echo "  -> chmod 600 $DAZZLE_HOME/.ssh/authorized_keys"
-  chmod 600 $DAZZLE_HOME/.ssh/authorized_keys
+  chmod 600 "$DAZZLE_HOME/.ssh/authorized_keys"
 
   # Disable the password for the "storage" user to force authentication using a key
-  CONFIG_CHECK=`grep "^# SparkleShare$" /etc/ssh/sshd_config`
+  CONFIG_CHECK=$( grep "^# SparkleShare$" /etc/ssh/sshd_config )
   if ! [ "$CONFIG_CHECK" = "# SparkleShare" ]; then
-    echo "" >> /etc/ssh/sshd_config
-    echo "# SparkleShare" >> /etc/ssh/sshd_config
-    echo "# Please do not edit the above comment as it's used as a check by Dazzle" >> /etc/ssh/sshd_config
-    echo "Match User $DAZZLE_USER" >> /etc/ssh/sshd_config
-    echo "    PasswordAuthentication no" >> /etc/ssh/sshd_config
-    echo "    PubkeyAuthentication yes" >> /etc/ssh/sshd_config
-    echo "# End of SparkleShare configuration" >> /etc/ssh/sshd_config
+      {
+          echo ""
+          echo "# SparkleShare"
+          echo "# Please do not edit the above comment as it's used as a check by Dazzle"
+          echo "Match User $DAZZLE_USER"
+          echo "    PasswordAuthentication no"
+          echo "    PubkeyAuthentication yes"
+          echo "# End of SparkleShare configuration"
+      } >> /etc/ssh/sshd_config
   fi
 
   sleep 0.5
@@ -130,7 +132,7 @@ reload_ssh_config () {
 
 install_git () {
   if [ -n "$GIT" ]; then
-    GIT_VERSION=`$GIT --version | cut -b 13-`
+    GIT_VERSION=$( $GIT --version | cut -b 13- )
     echo "  -> The Git package has already been installed (version $GIT_VERSION)."
 
   else
@@ -140,9 +142,8 @@ install_git () {
 
     elif [ -f "/usr/bin/apt-get" ]; then
       echo "  -> apt-get --yes install git"
-      apt-get --yes --quiet install git
 
-      if [ $? -ne 0 ]; then
+      if apt-get --yes --quiet install git; then
         echo "  -> apt-get --yes install git-core"
         apt-get --yes --quiet install git-core
       fi
@@ -187,7 +188,7 @@ create_project () {
       echo -ne "  -> echo \"*.$EXTENSION -delta\" >> $DAZZLE_HOME/$1/info/attributes      \r"
       echo "*.$EXTENSION -delta" >> "$DAZZLE_HOME/$1/info/attributes"
       sleep 0.05
-      EXTENSION_UPPERCASE=`echo $EXTENSION | tr '[:lower:]' '[:upper:]'`
+      EXTENSION_UPPERCASE=$( echo "$EXTENSION" | tr '[:lower:]' '[:upper:]' )
       echo -ne "  -> echo \"*.$EXTENSION_UPPERCASE -delta\" >> $DAZZLE_HOME/$1/info/attributes      \r"
       echo "*.$EXTENSION_UPPERCASE -delta" >> "$DAZZLE_HOME/$1/info/attributes"
     done
@@ -196,7 +197,7 @@ create_project () {
 
     # Set the right permissions
     echo "  -> chown --recursive $DAZZLE_USER:$DAZZLE_GROUP $DAZZLE_HOME"
-    chown -R $DAZZLE_USER:$DAZZLE_GROUP "$DAZZLE_HOME"
+    chown -R "$DAZZLE_USER:$DAZZLE_GROUP" "$DAZZLE_HOME"
 
     echo "  -> chmod --recursive o-rwx $DAZZLE_HOME/$1"
     chmod -R o-rwx "$DAZZLE_HOME"/"$1"
@@ -212,8 +213,8 @@ create_project () {
   # 2. select only global scope addresses
   # 3. extract the address
   # 4. limit the list to the first address to get only one IP in case the server has more than one
-  IP=`ip -f inet addr |grep "inet .* scope global" | grep -Po "inet ([\d+\.]+)" | cut -c 6- | head -n1`
-  PORT=`grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut -b 6-`
+  IP=$( ip -f inet addr |grep "inet .* scope global" | grep -Po "inet ([\d+\.]+)" | cut -c 6- | head -n1 )
+  PORT=$( grep --max-count=1 "^Port " /etc/ssh/sshd_config | cut -b 6- )
 
   # Display info to link with the created project to the user
   echo "To link up a SparkleShare client, enter the following"
@@ -231,9 +232,9 @@ link_client () {
   echo "Paste your Client ID (found in the status icon menu) below and press ${BOLD}<ENTER>${NORMAL}."
   echo
   echo -n " ${BOLD}Client ID: ${NORMAL}"
-  read LINK_CODE
+  read -r LINK_CODE
 
-  echo $LINK_CODE >> $DAZZLE_HOME/.ssh/authorized_keys
+  echo "$LINK_CODE" >> "$DAZZLE_HOME/.ssh/authorized_keys"
   echo
   echo "${BOLD}The client with this ID can now access projects.${NORMAL}"
   echo "Repeat this step to give access to more clients."
@@ -274,7 +275,7 @@ case $1 in
     ;;
 
   link)
-    link_client $2
+    link_client "$2"
     ;;
 
   *|help)
