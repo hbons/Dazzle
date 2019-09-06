@@ -117,6 +117,12 @@ reload_ssh_config () {
   fi
 }
 
+install_git_failed () {
+  echo "${BOLD}Could not install Git... Please install it manually before continuing.${NORMAL}"
+  echo
+  exit 1
+}
+
 install_git () {
   if [ -n "$GIT" ]; then
     GIT_VERSION=$( $GIT --version | cut -b 13- )
@@ -125,32 +131,41 @@ install_git () {
   else
     if [ -f "/usr/bin/yum" ]; then
       echo "  -> yum --assumeyes install git"
-      yum -y --quiet install git
+      if ! yum -y --quiet install git; then
+        install_git_failed
+      fi
 
     elif [ -f "/usr/bin/apt-get" ]; then
       echo "  -> apt-get --yes install git"
-
       if apt-get --yes --quiet install git; then
         echo "  -> apt-get --yes install git-core"
-        apt-get --yes --quiet install git-core
+        if ! apt-get --yes --quiet install git-core; then
+          install_git_failed
+        fi
+      else
+        install_git_failed
       fi
 
     elif [ -f "/usr/bin/zypper" ]; then
       echo "  -> zypper --yes install git-core"
-      zypper --yes --quiet install git-core
+      if ! zypper --yes --quiet install git-core; then
+        install_git_failed
+      fi
 
     elif [ -f "/usr/bin/emerge" ]; then
       echo "  -> emerge dev-vcs/git"
-      emerge --quiet dev-vcs/git
+      if ! emerge --quiet dev-vcs/git; then
+        install_git_failed
+      fi
 
     elif [ -f "/usr/bin/pacman" ]; then
       echo "  -> pacman -S git"
-      pacman -S git
+      if ! pacman -S git; then
+        install_git_failed
+      fi
 
     else
-      echo "${BOLD}Could not install Git... Please install it manually before continuing.{$NORMAL}"
-      echo
-      exit 1
+      install_git_failed
     fi
   fi
 }
@@ -160,6 +175,12 @@ create_project () {
     echo "  -> Project \"$1\" already exists."
     echo
   else
+    # Sanity check for Git
+    if [ -z $GIT ]; then
+      echo "Git is currently not installed! Run the \"dazzle setup\" command to fix this problem."
+      exit 1
+    fi
+
     # Create the Git repository
     echo "  -> $GIT init --bare $DAZZLE_HOME/$1"
     $GIT init --quiet --bare "$DAZZLE_HOME/$1"
