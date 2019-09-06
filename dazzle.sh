@@ -242,6 +242,14 @@ link_client () {
   echo -n " ${BOLD}Client ID: ${NORMAL}"
   read -r LINK_CODE
 
+  if [[ "$LINK_CODE" != ssh-rsa\ * ]]; then
+    echo
+    echo "${BOLD}The supplied string is not a valid Client ID!${NORMAL}"
+    echo "Please try again."
+    echo
+    exit 1
+  fi
+
   echo "$LINK_CODE" >> "$DAZZLE_HOME/.ssh/authorized_keys"
   echo
   echo "${BOLD}The client with this ID can now access projects.${NORMAL}"
