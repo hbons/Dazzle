@@ -111,9 +111,13 @@ reload_ssh_config () {
     echo "  -> /etc/rc.d/sshd reload"
     /etc/rc.d/sshd reload >/dev/null
 
-  else
+  elif [ -f "/etc/init.d/ssh" ]; then
     echo "  -> /etc/init.d/ssh reload"
     /etc/init.d/ssh reload >/dev/null
+
+  else
+    echo "  -> systemctl reload sshd"
+    systemctl reload sshd
   fi
 }
 
